@@ -1,0 +1,122 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.google.cloud.tools.jib' version '3.0.0'
+    id 'jacoco'
+    id 'java'
+
+}
+
+group = 'com.techsophy.tsf'
+version = '1.2.0'
+description = 'tp-api-gateway'
+
+compileJava {
+    sourceCompatibility = 11
+    targetCompatibility = 11
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "Hoxton.SR8")
+}
+jib {
+	container {
+		jvmFlags = [
+				'-Dotel.exporter=jaeger',
+				'-Dotel.exporter.jaeger.endpoint=http://jaeger:14250',
+				'-Dotel.exporter.jaeger.service.name=gateway',
+				'-Dapplication.name=gateway',
+				'-javaagent:/opentelemetry-javaagent-all.jar'
+		]
+	}
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-security'
+    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.5.9'
+
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testImplementation  'io.rest-assured:json-path:4.2.1'
+    testImplementation 'io.rest-assured:xml-path:4.2.1'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation group: 'io.rest-assured', name: 'rest-assured', version:'4.2.1'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+jar{
+    enabled = false
+}
+test {
+    finalizedBy jacocoTestReport
+    useJUnitPlatform()
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.84
+            }
+        }
+
+    }
+}
+check.dependsOn jacocoTestCoverageVerification
+
+
+
+//Integration test configuration
+sourceSets{
+    integrationTest {
+        java{
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integrationTest/java')
+            srcDir file('src/integrationTest/resources')
+
+        }
+    }
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+    outputs.upToDateWhen { false }
+}
+check.dependsOn compileIntegrationTestJava

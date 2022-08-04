@@ -1,0 +1,14 @@
+{
+  "name": "YELLOW",
+  "id": "910115016990359552",
+  "content": {
+    "fonts": {
+      "fontSize": 12,
+      "font": "Open Sans"
+    },
+    "colors": {
+      "headerColor": "#dbcb1a",
+      "textColor": "#171716"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gateway
+  template:
+    metadata:
+      labels:
+        name: gateway
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+      - image: tsdevopsteam/platform:gateway-$BUILD_NUMBER
+        name: gateway
+        envFrom:
+        - configMapRef:
+            name: gateway
+
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: ts-platform
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: dev
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+  selector:
+    name: gateway

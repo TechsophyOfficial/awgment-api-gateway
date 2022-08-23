@@ -1,5 +1,6 @@
 keycloak:
   issuer-uri: ${KEYCLOAK_URL_AUTH:https://keycloak-tsplatform.techsophy.com}/auth/realms/
+  service-url: http://keycloak:8080
   realm.name: ${KEYCLOAK_REALM_NAME:techsophy-platform}
     # Keycloak Camunda Identity Client
   client.id: ${KEYCLOAK_CLIENT_ID:camunda-identity-service}
@@ -263,13 +264,13 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${keycloak.issuer-uri}${keycloak.realm.name}
+          issuer-uri: ${keycloak.service-url}${keycloak.realm.name}
       client:
         provider:
           keycloak:
-            token-uri: ${keycloak.issuer-uri}${keycloak.realm.name}/protocol/openid-connect/token
+            token-uri: ${keycloak.service-url}${keycloak.realm.name}/protocol/openid-connect/token
             authorization-uri: ${keycloak.issuer-uri}${keycloak.realm.name}/protocol/openid-connect/auth
-            userinfo-uri: ${keycloak.issuer-uri}${keycloak.realm.name}/protocol/openid-connect/userinfo
+            userinfo-uri: ${keycloak.service-url}${keycloak.realm.name}/protocol/openid-connect/userinfo
             user-name-attribute: preferred_username
         registration:
           keycloak-without-test-scope:

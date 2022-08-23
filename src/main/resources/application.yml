@@ -1,6 +1,6 @@
 keycloak:
   issuer-uri: ${KEYCLOAK_URL_AUTH:https://keycloak-tsplatform.techsophy.com}/auth/realms/
-  service-url: http://keycloak:8080
+  service-url: ${KEYCLOAK_SERVICE_URL:http://keycloak:8080}
   realm.name: ${KEYCLOAK_REALM_NAME:techsophy-platform}
     # Keycloak Camunda Identity Client
   client.id: ${KEYCLOAK_CLIENT_ID:camunda-identity-service}

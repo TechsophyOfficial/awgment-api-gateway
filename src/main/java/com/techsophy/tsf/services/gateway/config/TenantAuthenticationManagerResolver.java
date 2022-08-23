@@ -18,7 +18,7 @@ import java.util.*;
 public class TenantAuthenticationManagerResolver implements ReactiveAuthenticationManagerResolver<ServerWebExchange> {
     private final Map<String, ReactiveAuthenticationManager> authenticationManagers = new HashMap<>();
 
-    @Value("${keycloak.issuer-uri}")
+    @Value("${keycloak.service-url}")
     private String keycloakIssuerUri;
 
     @Override

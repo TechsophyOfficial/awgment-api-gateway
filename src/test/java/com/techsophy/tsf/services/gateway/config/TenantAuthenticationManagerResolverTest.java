@@ -66,6 +66,7 @@ class TenantAuthenticationManagerResolverTest {
 
     }
 
+
     @Order(3)
     @Test
     void resolveTest(){

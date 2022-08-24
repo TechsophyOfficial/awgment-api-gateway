@@ -13,6 +13,7 @@ CORS_ALLOWEDORIGINS: '*'
 springdoc:
   version: '@springdoc.version@'
 
+
 spring:
   application:
     name: gateway

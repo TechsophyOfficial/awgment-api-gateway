@@ -38,7 +38,7 @@ class TenantAuthenticationManagerResolverTest {
     @BeforeEach
     public void setUp()
     {
-        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"keycloakIssuerUri","https://keycloak-tsplatform.techsophy.com/auth/realms");
+        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"keycloakIssuerUri","http://localhost:localhost");
     }
 
     @Order(1)

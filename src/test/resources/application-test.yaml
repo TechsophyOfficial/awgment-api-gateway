@@ -270,6 +270,8 @@ spring:
    resourceserver:
     jwt:
      issuer-uri: ${keycloak.service-url}${keycloak.realm.name}
+
+
    client:
     provider:
      keycloak:

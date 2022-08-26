@@ -300,6 +300,3 @@ security:
  disabled:
   baseUrl:
    - /**/config-server/**
-
-server:
- port: 8081

@@ -300,4 +300,3 @@ security:
     baseUrl:
       - /**/config-server/**
 
-

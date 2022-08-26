@@ -300,5 +300,4 @@ security:
     baseUrl:
       - /**/config-server/**
 
-server:
-  port: 8081
+

@@ -1,13 +1,17 @@
 keycloak:
   issuer-uri: ${KEYCLOAK_URL_AUTH:https://keycloak-tsplatform.techsophy.com}/auth/realms/
   realm.name: ${KEYCLOAK_REALM_NAME:techsophy-platform}
-    # Keycloak Camunda Identity Client
+  # Keycloak Camunda Identity Client
   client.id: ${KEYCLOAK_CLIENT_ID:camunda-identity-service}
   client.secret: ${KEYCLOAK_CLIENT_SECRET:0ef502e1-567a-48cf-ae56-7e1a5bdfe3c4}
 
+ADD_ALLOWEDHEADER: '*'
+ADD_ALLOWEDMETHOD: '*'
+CORS_ALLOWEDORIGINS: '*'
 
 springdoc:
   version: '@springdoc.version@'
+
 
 spring:
   application:
@@ -16,9 +20,9 @@ spring:
     gateway:
       default-filters:
         - TokenRelay
-#      discovery:
-#        locator:
-#          enabled: true
+      #      discovery:
+      #        locator:
+      #          enabled: true
       routes:
         - id: form-modeler-service
           uri: http://form-app:8080
@@ -155,7 +159,7 @@ spring:
           predicates:
             - Path=/api/config-server/**
           filters:
-              - StripPrefix=1
+            - StripPrefix=1
         - id: checklist-modeler-service
           uri: http://checklist-app:8080
           predicates:
@@ -292,6 +296,6 @@ logging.pattern.console: "%d{HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
 
 security:
   disabled:
-      baseUrl:
-        - /**/config-server/**
+    baseUrl:
+      - /**/config-server/**
 

@@ -262,6 +262,12 @@ spring:
             - Path=/api/runtime-template/**
           filters:
             - StripPrefix=1
+        - id: task-management-service
+          uri: http://task-management-app:8080
+          predicates:
+            - Path=/api/task-management/**
+          filters:
+            - StripPrefix=1
 
   security:
     oauth2:

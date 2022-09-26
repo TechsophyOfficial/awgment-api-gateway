@@ -1,9 +1,8 @@
 package com.techsophy.tsf.api;
 
-import utils.ConfigLoader;
 import io.restassured.RestAssured;
-
 import io.restassured.response.Response;
+import utils.ConfigLoader;
 
 import java.time.Instant;
 import java.util.HashMap;

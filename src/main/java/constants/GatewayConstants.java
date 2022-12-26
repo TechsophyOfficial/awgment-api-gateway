@@ -9,6 +9,4 @@ public class GatewayConstants
     public static final String CONFIG_SERVER="/config-server";
 
     public static final String TEST_ACTIVE_PROFILE="test";
-    public static final String PACKAGE_NAME ="com.techsophy.tsf.services.gateway.*";
-
 }

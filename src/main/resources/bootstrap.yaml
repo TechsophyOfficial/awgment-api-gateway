@@ -1,5 +1,5 @@
 spring.application.name: tp-api-gateway
 spring.profiles.active: dev
-spring.cloud.config.uri: ${GATEWAY_URI}/config-server
+spring.cloud.config.uri: http://cloud-config-server:8080/config-server
 management.endpoints.web.exposure.include: refresh
 management.endpoints.web.path-mapping.refresh: refresh

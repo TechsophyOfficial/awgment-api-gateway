@@ -12,16 +12,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import static constants.GatewayConstants.BASE_URL;
+import static constants.GatewayConstants.PACKAGE_NAME;
 
 @SpringBootApplication
 @RestController
 @RequestMapping(BASE_URL)
+@ComponentScan(PACKAGE_NAME)
 public class GatewayApplication {
 
     public static void main(String[] args) {

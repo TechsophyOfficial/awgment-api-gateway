@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMessage;
@@ -38,7 +40,7 @@ class TenantAuthenticationManagerResolverTest {
     @BeforeEach
     public void setUp()
     {
-        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"keycloakIssuerUri","https://keycloak-tsplatform.techsophy.com}/auth/realms/");
+        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"keycloakIssuerUri","https://keycloak-tsplatform.techsophy.com/auth/realms/");
     }
 
     @Order(1)
@@ -70,7 +72,7 @@ class TenantAuthenticationManagerResolverTest {
     @Test
     void resolveTest(){
 
-        Mockito.when(httpMessage.getHeaders()).thenReturn(httpHeaders);
+//        Mockito.when(httpMessage.getHeaders()).thenReturn(httpHeaders);
         Mockito.when(serverWebExchange.getRequest()).thenReturn(serverHttpRequest);
         Mockito.when(serverHttpRequest.getHeaders()).thenReturn(httpHeaders);
         Mockito.when(httpHeaders.getFirst("Authorization")).thenReturn(idToken);

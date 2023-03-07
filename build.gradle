@@ -41,7 +41,10 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     implementation 'org.springframework.cloud:spring-cloud-starter-security'
     implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.5.9'
-
+    implementation 'org.springframework.cloud:spring-cloud-starter-config:3.1.2'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.2'
+    runtimeOnly 'org.springframework.cloud:spring-cloud-dependencies:2020.0.3'
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
@@ -53,6 +56,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation group: 'io.rest-assured', name: 'rest-assured', version:'4.2.1'
 }
+
+
 
 dependencyManagement {
     imports {

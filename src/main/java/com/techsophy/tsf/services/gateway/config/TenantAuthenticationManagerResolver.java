@@ -26,7 +26,7 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
         return Mono.just(this.authenticationManagers.computeIfAbsent(toTenant(request), this::fromTenant));
     }
 
-    private String toTenant(ServerWebExchange request) {
+    public static String toTenant(ServerWebExchange request) {
         String stoken = request.getRequest().getHeaders().getFirst("Authorization");
         try {
             return getIssuerFromToken(stoken);

@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import static com.techsophy.tsf.services.gateway.constants.GatewayConstants.*;
 
 @Component
 public class AwgmentOAuthRequestResolver implements ServerOAuth2AuthorizationRequestResolver
@@ -28,26 +29,26 @@ public class AwgmentOAuthRequestResolver implements ServerOAuth2AuthorizationReq
     @Override
     public Mono<OAuth2AuthorizationRequest> resolve(ServerWebExchange exchange)
     {
-        String header = exchange.getRequest().getHeaders().getFirst("X-Tenant");
+        String header = exchange.getRequest().getHeaders().getFirst(X_TENANT);
         if(header==null)
         {
-            header = exchange.getRequest().getQueryParams().getFirst("_tenant");
+            header = exchange.getRequest().getQueryParams().getFirst(QUERY_PARAM_TENANT);
         }
         String tenant = header==null?defaultRealmName:header;
         Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange);
-        return authRequest.map(auth -> OAuth2AuthorizationRequest.from(auth).authorizationRequestUri(auth.getAuthorizationRequestUri().replace("realms/"+defaultRealmName, "realms/"+ tenant)).build());
+        return authRequest.map(auth -> OAuth2AuthorizationRequest.from(auth).authorizationRequestUri(auth.getAuthorizationRequestUri().replace(REALMS+defaultRealmName, REALMS+ tenant)).build());
     }
 
     @Override
     public Mono<OAuth2AuthorizationRequest> resolve(ServerWebExchange exchange, String clientRegistrationId)
     {
-        String header = exchange.getRequest().getHeaders().getFirst("X-Tenant");
+        String header = exchange.getRequest().getHeaders().getFirst(X_TENANT);
         if(header==null)
         {
             header = TenantAuthenticationManagerResolver.toTenant(exchange);
         }
-        String tenant = header==null?"techsophy-platform":header;
+        String tenant = header==null?defaultRealmName:header;
         Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange,clientRegistrationId);
-        return authRequest.map(auth -> OAuth2AuthorizationRequest.from(auth).authorizationRequestUri(auth.getAuthorizationRequestUri().replace("realms/"+defaultRealmName, "realms/"+ tenant)).build());
+        return authRequest.map(auth -> OAuth2AuthorizationRequest.from(auth).authorizationRequestUri(auth.getAuthorizationRequestUri().replace(REALMS+defaultRealmName, REALMS+ tenant)).build());
     }
 }

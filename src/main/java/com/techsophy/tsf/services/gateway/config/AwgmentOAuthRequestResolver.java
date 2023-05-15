@@ -45,7 +45,7 @@ public class AwgmentOAuthRequestResolver implements ServerOAuth2AuthorizationReq
         String header = exchange.getRequest().getHeaders().getFirst(X_TENANT);
         if(header==null)
         {
-            header = TenantAuthenticationManagerResolver.toTenant(exchange);
+            header = exchange.getRequest().getQueryParams().getFirst(QUERY_PARAM_TENANT);
         }
         String tenant = header==null?defaultRealmName:header;
         Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange,clientRegistrationId);

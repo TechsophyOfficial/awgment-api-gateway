@@ -29,7 +29,34 @@ class AwgmentOAuthRequestResolverTest
     AwgmentOAuthRequestResolver awgmentOAuthRequestResolver;
 
     @Test
-    void resolveWebExchangeWithHeaderTest()
+    void resolveWebExchangeWithHeaderInQueryParamTest()
+    {
+        MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest.get(TEST_URL+"?_tenant=kims").build()).build();
+        Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange);
+        StepVerifier.create(resolve)
+                .expectNext(OAuth2AuthorizationRequest
+                        .authorizationCode().authorizationRequestUri(TEST_URL)
+                        .authorizationUri(TEST_URL).clientId(CLIENT_ID)
+                        .redirectUri(TEST_URL)
+                        .build()).expectComplete();
+    }
+
+    @Test
+    void resolveWebExchangeWithNewHeaderTest()
+    {
+        LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of("kims")));
+        MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest.get(TEST_URL).headers(headers).build()).build();
+        Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange);
+        StepVerifier.create(resolve)
+                .expectNext(OAuth2AuthorizationRequest
+                        .authorizationCode().authorizationRequestUri(TEST_URL)
+                        .authorizationUri(TEST_URL).clientId(CLIENT_ID)
+                        .redirectUri(TEST_URL)
+                        .build()).expectComplete();
+    }
+
+    @Test
+    void resolveWebExchangeWithDefaultHeaderTest()
     {
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of(TECHSOPHY_PLATFORM)));
         MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest.get(TEST_URL).headers(headers).build()).build();
@@ -43,7 +70,7 @@ class AwgmentOAuthRequestResolverTest
     }
 
     @Test
-    void resolveWebExchangeWithoutHeaderTest()
+    void resolveWebExchangeWithoutHeaderDefaultRealmTest()
     {
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of());
         MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest.get(TEST_URL).headers(headers).build()).build();
@@ -81,7 +108,7 @@ class AwgmentOAuthRequestResolverTest
     }
 
     @Test
-    void resolveWebExchangeAndClientRegistrationWithoutHeaderTest()
+    void resolveWebExchangeAndClientRegistrationWithoutHeaderDefaultRealmTest()
     {
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of());
         MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest.get(TEST_URL).headers(headers).build()).build();
@@ -100,6 +127,53 @@ class AwgmentOAuthRequestResolverTest
                 .expectNext(OAuth2AuthorizationRequest
                         .authorizationCode().authorizationRequestUri(TEST_URL)
                         .authorizationUri(TEST_URL).clientId(CLIENT_SECRET)
+                        .redirectUri(TEST_URL)
+                        .build()).expectComplete();
+    }
+
+    @Test
+    void resolveWebExchangeAndClientRegistrationWithNewHeaderTest()
+    {
+        LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of("kims")));
+        MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest.get(TEST_URL).headers(headers).build()).build();
+        Mockito.when(repo.findByRegistrationId(anyString())).thenReturn(Mono.just(ClientRegistration
+                .withRegistrationId(CLIENT_ID)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .clientId(CLIENT_ID)
+                .clientName(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .authorizationUri(TEST_URL)
+                .redirectUriTemplate(TEST_URL)
+                .tokenUri(TEST_URL)
+                .build()));
+        Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange,CLIENT_REG_ID);
+        StepVerifier.create(resolve)
+                .expectNext(OAuth2AuthorizationRequest
+                        .authorizationCode().authorizationRequestUri(TEST_URL)
+                        .authorizationUri(TEST_URL).clientId(CLIENT_ID)
+                        .redirectUri(TEST_URL)
+                        .build()).expectComplete();
+    }
+
+    @Test
+    void resolveWebExchangeAndClientRegistrationWithNewHeaderInQueryTest()
+    {
+        MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest.get(TEST_URL+"_tenant=kims").build()).build();
+        Mockito.when(repo.findByRegistrationId(anyString())).thenReturn(Mono.just(ClientRegistration
+                .withRegistrationId(CLIENT_ID)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .clientId(CLIENT_ID)
+                .clientName(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .authorizationUri(TEST_URL)
+                .redirectUriTemplate(TEST_URL)
+                .tokenUri(TEST_URL)
+                .build()));
+        Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange,CLIENT_REG_ID);
+        StepVerifier.create(resolve)
+                .expectNext(OAuth2AuthorizationRequest
+                        .authorizationCode().authorizationRequestUri(TEST_URL+" ")
+                        .authorizationUri(TEST_URL).clientId(CLIENT_ID)
                         .redirectUri(TEST_URL)
                         .build()).expectComplete();
     }

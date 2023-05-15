@@ -23,7 +23,7 @@ import static com.techsophy.tsf.services.gateway.constants.GatewayTestConstants.
 class MultitenancyFilterTest
 {
     @Test
-    void filterWithHeaderTest()
+    void filterWithDefaultHeaderTest()
     {
         MultiTenancyFilter multiTenancyFilter=new MultiTenancyFilter();
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of(TECHSOPHY_PLATFORM)));
@@ -49,6 +49,35 @@ class MultitenancyFilterTest
         MockServerHttpResponse response=webExchange.getResponse();
         HttpHeaders httpHeadersResponse=response.getHeaders();
         Assertions.assertEquals(TECHSOPHY_PLATFORM, httpHeadersResponse.getFirst(X_TENANT));
+        Assertions.assertNotNull(httpHeadersResponse.get(X_CORRELATIONID));
+    }
+
+    @Test
+    void filterWithNewHeaderTest()
+    {
+        MultiTenancyFilter multiTenancyFilter=new MultiTenancyFilter();
+        LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of("kims")));
+        MockServerWebExchange webExchange = MockServerWebExchange
+                .builder(MockServerHttpRequest
+                        .get(TEST_URL)
+                        .headers(headers)
+                        .build())
+                .build();
+        GatewayFilterChain gatewayFilterChain = (exchange) -> {
+            headers.set(X_TENANT, "kims");
+            return ServerResponse.ok()
+                    .headers(h -> h.addAll(exchange.getResponse().getHeaders()))
+                    .bodyValue(RESPONSE_BODY)
+                    .then();
+        };
+        Mono<Void> result=multiTenancyFilter.filter(webExchange, gatewayFilterChain);
+        StepVerifier.create(result)
+                .expectSubscription()
+                .expectComplete()
+                .verify();
+        MockServerHttpResponse response=webExchange.getResponse();
+        HttpHeaders httpHeadersResponse=response.getHeaders();
+        Assertions.assertEquals("kims", httpHeadersResponse.getFirst(X_TENANT));
         Assertions.assertNotNull(httpHeadersResponse.get(X_CORRELATIONID));
     }
 }

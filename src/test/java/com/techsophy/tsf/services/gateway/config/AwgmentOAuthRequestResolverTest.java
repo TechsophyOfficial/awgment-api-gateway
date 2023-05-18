@@ -1,5 +1,6 @@
 package com.techsophy.tsf.services.gateway.config;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,10 +34,20 @@ class AwgmentOAuthRequestResolverTest
     AwgmentOAuthRequestResolver awgmentOAuthRequestResolver;
 
     @BeforeEach
-    void beforeAll()
+    void beforeEach()
     {
         ReflectionTestUtils.setField(awgmentOAuthRequestResolver,"defaultRealmName","techsophy-platform");
         ReflectionTestUtils.setField(awgmentOAuthRequestResolver,"keycloakIssuerUri"," https://keycloak-tsplatform.techsophy.com/auth/realms/");
+        Mockito.when(repo.findByRegistrationId(anyString())).thenReturn(Mono.just(ClientRegistration
+                .withRegistrationId(REGISTRATION_ID)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .clientId(CLIENT_ID)
+                .clientName(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .authorizationUri(TEST_URL+REALMS+TECHSOPHY_PLATFORM)
+                .redirectUriTemplate(TEST_URL+TECHSOPHY_PLATFORM)
+                .tokenUri(TEST_URL)
+                .build()));
     }
 
     @Test
@@ -51,11 +62,7 @@ class AwgmentOAuthRequestResolverTest
                 .build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange);
-        StepVerifier.create(resolve)
-                        .expectNextMatches(
-                                oAuth2AuthorizationRequest ->
-                                        oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                                .contains(REALMS+TESTING_TENANT));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TESTING_TENANT));
     }
 
     @Test
@@ -69,11 +76,7 @@ class AwgmentOAuthRequestResolverTest
                         .build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange);
-        StepVerifier.create(resolve)
-                .expectNextMatches(
-                        oAuth2AuthorizationRequest ->
-                                oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                        .contains(REALMS+TESTING_TENANT));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TESTING_TENANT));
     }
 
     @Test
@@ -87,11 +90,7 @@ class AwgmentOAuthRequestResolverTest
                 .headers(headers).build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange);
-        StepVerifier.create(resolve)
-                .expectNextMatches(
-                        oAuth2AuthorizationRequest ->
-                                oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                        .contains(REALMS+TECHSOPHY_PLATFORM));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TECHSOPHY_PLATFORM));
     }
 
     @Test
@@ -105,26 +104,12 @@ class AwgmentOAuthRequestResolverTest
                         .build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange);
-        StepVerifier.create(resolve)
-                .expectNextMatches(
-                        oAuth2AuthorizationRequest ->
-                                oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                        .contains(REALMS+TECHSOPHY_PLATFORM));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TECHSOPHY_PLATFORM));
     }
 
     @Test
     void resolveWebExchangeAndClientRegistrationWithHeaderTest()
     {
-        Mockito.when(repo.findByRegistrationId(anyString())).thenReturn(Mono.just(ClientRegistration
-                .withRegistrationId(REGISTRATION_ID)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .clientId(CLIENT_ID)
-                .clientName(CLIENT_ID)
-                .clientSecret(CLIENT_SECRET)
-                .authorizationUri(TEST_URL+REALMS+TECHSOPHY_PLATFORM)
-                .redirectUriTemplate(TEST_URL+TECHSOPHY_PLATFORM)
-                .tokenUri(TEST_URL)
-                .build()));
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of(TECHSOPHY_PLATFORM)));
         headers.put(AUTHORIZATION,List.of(BEARER_TOKEN));
         MockServerWebExchange webExchange = MockServerWebExchange.builder(MockServerHttpRequest
@@ -132,26 +117,12 @@ class AwgmentOAuthRequestResolverTest
                 .headers(headers).build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange,REGISTRATION_ID);
-        StepVerifier.create(resolve)
-                .expectNextMatches(
-                        oAuth2AuthorizationRequest ->
-                                oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                        .contains(REALMS+TECHSOPHY_PLATFORM));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TECHSOPHY_PLATFORM));
     }
 
     @Test
     void resolveWebExchangeAndClientRegistrationWithoutHeaderDefaultRealmTest()
     {
-        Mockito.when(repo.findByRegistrationId(anyString())).thenReturn(Mono.just(ClientRegistration
-                .withRegistrationId(REGISTRATION_ID)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .clientId(CLIENT_ID)
-                .clientName(CLIENT_ID)
-                .clientSecret(CLIENT_SECRET)
-                .authorizationUri(TEST_URL+REALMS+TECHSOPHY_PLATFORM)
-                .redirectUriTemplate(TEST_URL+TECHSOPHY_PLATFORM)
-                .tokenUri(TEST_URL)
-                .build()));
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of());
         headers.put(AUTHORIZATION,List.of(BEARER_TOKEN));
         MockServerWebExchange webExchange = MockServerWebExchange
@@ -160,26 +131,12 @@ class AwgmentOAuthRequestResolverTest
                         .build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange,REGISTRATION_ID);
-        StepVerifier.create(resolve)
-                .expectNextMatches(
-                        oAuth2AuthorizationRequest ->
-                                oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                        .contains(REALMS+TECHSOPHY_PLATFORM));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TECHSOPHY_PLATFORM));
     }
 
     @Test
     void resolveWebExchangeAndClientRegistrationWithNewHeaderTest()
     {
-        Mockito.when(repo.findByRegistrationId(anyString())).thenReturn(Mono.just(ClientRegistration
-                .withRegistrationId(REGISTRATION_ID)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .clientId(CLIENT_ID)
-                .clientName(CLIENT_ID)
-                .clientSecret(CLIENT_SECRET)
-                .authorizationUri(TEST_URL+REALMS+TECHSOPHY_PLATFORM)
-                .redirectUriTemplate(TEST_URL+TECHSOPHY_PLATFORM)
-                .tokenUri(TEST_URL)
-                .build()));
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of(TESTING_TENANT)));
         headers.put(AUTHORIZATION,List.of(BEARER_TOKEN));
         MockServerWebExchange webExchange = MockServerWebExchange
@@ -188,26 +145,26 @@ class AwgmentOAuthRequestResolverTest
                         .build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange,REGISTRATION_ID);
-        StepVerifier.create(resolve)
-                .expectNextMatches(
-                        oAuth2AuthorizationRequest ->
-                                oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                        .contains(REALMS+TESTING_TENANT));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TESTING_TENANT));
+    }
+
+    @Test
+    void resolveWebExchangeAndNullClientRegistrationWithNewHeaderTest()
+    {
+        LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of(TESTING_TENANT)));
+        headers.put(AUTHORIZATION,List.of(BEARER_TOKEN));
+        MockServerWebExchange webExchange = MockServerWebExchange
+                .builder(MockServerHttpRequest.get(URL_TEMPLATE)
+                        .headers(headers)
+                        .build())
+                .build();
+        Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange,null);
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TESTING_TENANT));
     }
 
     @Test
     void resolveWebExchangeAndClientRegistrationWithNewHeaderInQueryTest()
     {
-        Mockito.when(repo.findByRegistrationId(anyString())).thenReturn(Mono.just(ClientRegistration
-                .withRegistrationId(REGISTRATION_ID)
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .clientId(CLIENT_ID)
-                .clientName(CLIENT_ID)
-                .clientSecret(CLIENT_SECRET)
-                .authorizationUri(TEST_URL+REALMS+TECHSOPHY_PLATFORM)
-                .redirectUriTemplate(TEST_URL+TECHSOPHY_PLATFORM)
-                .tokenUri(TEST_URL)
-                .build()));
         LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.put(AUTHORIZATION,List.of(BEARER_TOKEN));
         MockServerWebExchange webExchange = MockServerWebExchange
@@ -216,10 +173,6 @@ class AwgmentOAuthRequestResolverTest
                         .build())
                 .build();
         Mono<OAuth2AuthorizationRequest> resolve = awgmentOAuthRequestResolver.resolve(webExchange,REGISTRATION_ID);
-        StepVerifier.create(resolve)
-                .expectNextMatches(
-                        oAuth2AuthorizationRequest ->
-                                oAuth2AuthorizationRequest.getAuthorizationRequestUri()
-                                        .contains(REALMS+TESTING_TENANT));
+        Assertions.assertTrue(resolve.block().getAuthorizationRequestUri().contains(REALMS+TESTING_TENANT));
     }
 }

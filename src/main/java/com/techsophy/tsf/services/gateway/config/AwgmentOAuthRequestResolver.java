@@ -29,38 +29,44 @@ public class AwgmentOAuthRequestResolver implements ServerOAuth2AuthorizationReq
     @Override
     public Mono<OAuth2AuthorizationRequest> resolve(ServerWebExchange exchange)
     {
-        String header = exchange.getRequest().getHeaders().getFirst(X_TENANT);
-        if(header==null)
-        {
-            header = exchange.getRequest().getQueryParams().getFirst(QUERY_PARAM_TENANT);
-        }
-        String tenant = header==null?defaultRealmName:header;
+        String tenant = getTenant(exchange);
         Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange);
-        return authRequest
-                .map(auth -> OAuth2AuthorizationRequest
-                        .from(auth)
-                        .authorizationRequestUri(auth
-                                .getAuthorizationRequestUri()
-                                .replace(REALMS+defaultRealmName, REALMS+ tenant))
-                        .build());
+        return getoAuth2AuthorizationRequestMono(tenant, authRequest);
     }
 
     @Override
     public Mono<OAuth2AuthorizationRequest> resolve(ServerWebExchange exchange, String clientRegistrationId)
+    {
+        if(clientRegistrationId==null)
+        {
+          return   resolve(exchange);
+        }
+        else
+        {
+            String tenant = getTenant(exchange);
+            Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange,clientRegistrationId);
+            return getoAuth2AuthorizationRequestMono(tenant, authRequest);
+        }
+    }
+
+    private String getTenant(ServerWebExchange exchange)
     {
         String header = exchange.getRequest().getHeaders().getFirst(X_TENANT);
         if(header==null)
         {
             header = exchange.getRequest().getQueryParams().getFirst(QUERY_PARAM_TENANT);
         }
-        String tenant = header==null?defaultRealmName:header;
-        Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange,clientRegistrationId);
+        return header==null?defaultRealmName:header;
+    }
+
+    private Mono<OAuth2AuthorizationRequest> getoAuth2AuthorizationRequestMono(String tenant, Mono<OAuth2AuthorizationRequest> authRequest)
+    {
         return authRequest
                 .map(auth -> OAuth2AuthorizationRequest
                         .from(auth)
                         .authorizationRequestUri(auth
                                 .getAuthorizationRequestUri()
-                                .replace(REALMS+defaultRealmName, REALMS+ tenant))
+                                .replace(REALMS + defaultRealmName, REALMS + tenant))
                         .build());
     }
 }

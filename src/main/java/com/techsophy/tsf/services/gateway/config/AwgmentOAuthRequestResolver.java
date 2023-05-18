@@ -36,7 +36,13 @@ public class AwgmentOAuthRequestResolver implements ServerOAuth2AuthorizationReq
         }
         String tenant = header==null?defaultRealmName:header;
         Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange);
-        return authRequest.map(auth -> OAuth2AuthorizationRequest.from(auth).authorizationRequestUri(auth.getAuthorizationRequestUri().replace(REALMS+defaultRealmName, REALMS+ tenant)).build());
+        return authRequest
+                .map(auth -> OAuth2AuthorizationRequest
+                        .from(auth)
+                        .authorizationRequestUri(auth
+                                .getAuthorizationRequestUri()
+                                .replace(REALMS+defaultRealmName, REALMS+ tenant))
+                        .build());
     }
 
     @Override
@@ -49,6 +55,12 @@ public class AwgmentOAuthRequestResolver implements ServerOAuth2AuthorizationReq
         }
         String tenant = header==null?defaultRealmName:header;
         Mono<OAuth2AuthorizationRequest> authRequest= defaultResolver.resolve(exchange,clientRegistrationId);
-        return authRequest.map(auth -> OAuth2AuthorizationRequest.from(auth).authorizationRequestUri(auth.getAuthorizationRequestUri().replace(REALMS+defaultRealmName, REALMS+ tenant)).build());
+        return authRequest
+                .map(auth -> OAuth2AuthorizationRequest
+                        .from(auth)
+                        .authorizationRequestUri(auth
+                                .getAuthorizationRequestUri()
+                                .replace(REALMS+defaultRealmName, REALMS+ tenant))
+                        .build());
     }
 }

@@ -56,7 +56,7 @@ class MultitenancyFilterTest
     void filterWithNewHeaderTest()
     {
         MultiTenancyFilter multiTenancyFilter=new MultiTenancyFilter();
-        LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of("kims")));
+        LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>(Map.of(X_TENANT, List.of(TESTING_TENANT)));
         MockServerWebExchange webExchange = MockServerWebExchange
                 .builder(MockServerHttpRequest
                         .get(TEST_URL)
@@ -64,7 +64,7 @@ class MultitenancyFilterTest
                         .build())
                 .build();
         GatewayFilterChain gatewayFilterChain = (exchange) -> {
-            headers.set(X_TENANT, "kims");
+            headers.set(X_TENANT,TESTING_TENANT);
             return ServerResponse.ok()
                     .headers(h -> h.addAll(exchange.getResponse().getHeaders()))
                     .bodyValue(RESPONSE_BODY)
@@ -77,7 +77,7 @@ class MultitenancyFilterTest
                 .verify();
         MockServerHttpResponse response=webExchange.getResponse();
         HttpHeaders httpHeadersResponse=response.getHeaders();
-        Assertions.assertEquals("kims", httpHeadersResponse.getFirst(X_TENANT));
+        Assertions.assertEquals(TESTING_TENANT, httpHeadersResponse.getFirst(X_TENANT));
         Assertions.assertNotNull(httpHeadersResponse.get(X_CORRELATIONID));
     }
 }

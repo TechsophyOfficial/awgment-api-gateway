@@ -19,7 +19,7 @@ public class AwgmentFilter implements GlobalFilter {
         String correlationId = exchange.getRequest().getHeaders().getFirst("X-CorrelationId");
         tenant = tenant==null?"techsophy-platform":tenant;
         exchange.getRequest().getHeaders().set("X-Tenant",tenant);
-        exchange.getRequest().getHeaders().set("X-CorrelationId",correlationId==null?idGenerator.next,correlationId);
+//        exchange.getRequest().getHeaders().set("X-CorrelationId",correlationId==null?idGenerator.next:correlationId);
         //.getRequest().getHeaders().getFirst("Authorization");
 
         return null;

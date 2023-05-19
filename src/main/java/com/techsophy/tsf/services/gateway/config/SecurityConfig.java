@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManagerResolver;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
 import java.util.Arrays;
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -42,14 +42,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver
+    public SecurityWebFilterChain springSecurityFilterChain(
+            ServerHttpSecurity http,
+            ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver,
+            ServerOAuth2AuthorizationRequestResolver requestResolver
     ) {
         String[] res = securityDisableModel.getBaseUrl().toArray(new String[0]);
         http.csrf().disable();
         http.cors().configurationSource(corsConfigurationSource());
         http.authorizeExchange(exchanges -> exchanges
                 .pathMatchers(res).permitAll()
-                .anyExchange().authenticated()).oauth2Login(withDefaults());
+                .anyExchange().authenticated()).oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(requestResolver));
         http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
         return http.build();
     }

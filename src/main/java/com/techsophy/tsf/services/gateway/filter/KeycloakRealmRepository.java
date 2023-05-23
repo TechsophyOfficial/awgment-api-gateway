@@ -2,9 +2,11 @@ package com.techsophy.tsf.services.gateway.filter;
 
 import com.techsophy.tsf.services.gateway.service.impl.KeycloakClientCredentialsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrations;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +21,9 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
 
     @Autowired
     private TenantRegistrations tenants;
+
+    @Value("${keycloak.client.id:camunda-identity-service}")
+    private String clientId;
 
     @Autowired
     private KeycloakClientCredentialsService service;
@@ -35,8 +40,8 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
             Mono.fromCallable(() ->{
                 String secret = service.fetchClientDetails(s,false);
             return ClientRegistration.withClientRegistration(registrationMap.get(s))
+                    .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
                     .clientSecret(secret)
-                    .scope("camunda-rest-api","profile","email","awgment")
                     .build();
             })
         ).findFirst().get();
@@ -46,8 +51,9 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
     @Override
     public Iterator<ClientRegistration> iterator() {
          registrationMap = tenants.getRegistrations().parallelStream().map(s -> {
-            return ClientRegistrations.fromIssuerLocation("https://keycloak-tsplatform.techsophy.com/auth/realms/"+s)
-                    .registrationId(s).clientName(s).clientId("camunda-identity-service").build();
+            return ClientRegistrations
+                    .fromOidcIssuerLocation("https://keycloak-tsplatform.techsophy.com/auth/realms/"+s)
+                    .registrationId(s).clientName(s).clientId(clientId).build();
         }).collect(
                 Collectors.toMap(clientRegistration ->  clientRegistration.getRegistrationId(),clientRegistration -> clientRegistration
          ));

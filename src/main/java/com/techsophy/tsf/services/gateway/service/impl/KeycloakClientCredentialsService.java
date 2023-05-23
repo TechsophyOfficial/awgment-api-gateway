@@ -15,16 +15,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class KeycloakClientCredentialsService implements com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService {
 
-    @Value("${keycloak.master.username:venkataramana}")
+    @Value("${keycloak.master.username}")
     String userName;
 
-    @Value("${keycloak.master.password:Tech@4567}")
+    @Value("${keycloak.master.password}")
     String password;
 
-    @Value("${keycloak.auth-server-url:https://keycloak-tsplatform.techsophy.com/auth}")
+    @Value("${keycloak.auth-server-url}")
     String keycloakAuthUrl;
 
-    @Value("${keycloak.client.id:camunda-identity-service}")
+    @Value("${keycloak.client.id}")
     String clientId;
 
     @Value("${keycloak.master.realm.name:master}")

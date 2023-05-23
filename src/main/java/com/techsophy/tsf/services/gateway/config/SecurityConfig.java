@@ -9,13 +9,17 @@ import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.server.DefaultServerOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -45,26 +49,31 @@ public class SecurityConfig {
         return source;
     }
 
+
+    private ServerOAuth2AuthorizationRequestResolver authorizationRequestResolver(ReactiveClientRegistrationRepository repository) {
+        DefaultServerOAuth2AuthorizationRequestResolver requestResolver = new DefaultServerOAuth2AuthorizationRequestResolver(repository);
+        requestResolver.setAuthorizationRequestCustomizer(builder -> builder.scopes(null));
+        return requestResolver;
+    }
+
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(
             ServerHttpSecurity http,
-            ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver
-//            ServerOAuth2AuthorizationRequestResolver requestResolver
-//            ServerAuthorizationRequestRepository requestRepository
+            ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver,
+            ReactiveClientRegistrationRepository repository
     ) {
         String[] res = securityDisableModel.getBaseUrl().toArray(new String[0]);
         http.csrf().disable();
         http.cors().configurationSource(corsConfigurationSource());
         http.authorizeExchange(exchanges -> exchanges
-                .pathMatchers(res).permitAll()
-                .anyExchange().authenticated())
-                .oauth2Login(Customizer.withDefaults()
-//                        oAuth2LoginSpec -> {
-////                    oAuth2LoginSpec.authorizationRequestResolver(new AwgmentOAuthRequestResolver(repository));
-//            oAuth2LoginSpec.authorizationRequestResolver();
-////            oAuth2LoginSpec.authorizationRequestRepository(requestRepository);
-//            }
-        );
+                        .pathMatchers(res).permitAll()
+                        .anyExchange().authenticated())
+                .oauth2Login(
+//                        Customizer.withDefaults()
+                        oAuth2LoginSpec -> {
+                            oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository));
+                        }
+                );
         http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
 
         return http.build();

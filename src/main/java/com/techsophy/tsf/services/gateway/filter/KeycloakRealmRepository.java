@@ -23,6 +23,9 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
     @Value("${keycloak.client.id}")
     private String clientId;
 
+    @Value("${keycloak.issuer-uri}")
+    private String keycloakIssuerURI;
+
     @Autowired
     private KeycloakClientCredentialsService service;
 
@@ -31,7 +34,7 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
     public Iterator<ClientRegistration> iterator()
     {
         registrationMap = tenants.getRegistrations().parallelStream().map(s -> ClientRegistrations
-                .fromOidcIssuerLocation("https://keycloak-tsplatform.techsophy.com/auth/realms/"+s)
+                .fromOidcIssuerLocation(keycloakIssuerURI+s)
                 .registrationId(s).clientName(s).clientId(clientId).build()).collect(
                 Collectors.toMap(ClientRegistration::getRegistrationId, clientRegistration -> clientRegistration
                 ));

@@ -1,5 +1,6 @@
-package com.techsophy.tsf.services.gateway.filter;
+package com.techsophy.tsf.services.gateway.repository;
 
+import com.techsophy.tsf.services.gateway.dto.TenantRegistration;
 import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

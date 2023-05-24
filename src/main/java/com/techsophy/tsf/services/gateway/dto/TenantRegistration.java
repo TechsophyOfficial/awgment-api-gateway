@@ -1,4 +1,4 @@
-package com.techsophy.tsf.services.gateway.filter;
+package com.techsophy.tsf.services.gateway.dto;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

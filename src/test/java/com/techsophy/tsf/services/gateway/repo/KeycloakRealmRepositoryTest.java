@@ -1,5 +1,7 @@
-package com.techsophy.tsf.services.gateway.filter;
+package com.techsophy.tsf.services.gateway.repo;
 
+import com.techsophy.tsf.services.gateway.dto.TenantRegistration;
+import com.techsophy.tsf.services.gateway.repository.KeycloakRealmRepository;
 import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

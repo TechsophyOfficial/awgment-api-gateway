@@ -1,5 +1,6 @@
-package com.techsophy.tsf.services.gateway.service;
+package com.techsophy.tsf.services.gateway.service.impl;
 
+import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.ClientRepresentation;

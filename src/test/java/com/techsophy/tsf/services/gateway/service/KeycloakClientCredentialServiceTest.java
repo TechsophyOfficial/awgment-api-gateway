@@ -1,5 +1,6 @@
 package com.techsophy.tsf.services.gateway.service;
 
+import com.techsophy.tsf.services.gateway.service.impl.KeycloakClientCredentialServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

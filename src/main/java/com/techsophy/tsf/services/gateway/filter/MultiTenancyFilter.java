@@ -28,18 +28,25 @@ public class MultiTenancyFilter implements GlobalFilter
         String tenant = jwtTenant==null?exchange.getRequest().getHeaders().getFirst(X_TENANT):jwtTenant;
         String correlationId=exchange.getRequest().getHeaders().getFirst(X_CORRELATIONID);
         correlationId=correlationId==null?String.valueOf(idGenerator.nextId()):correlationId;
-        ServerHttpRequest request =exchange.getRequest()
+        ServerHttpRequest.Builder builder=exchange.getRequest()
                 .mutate()
-                .header(X_TENANT,tenant)
-                .header(X_CORRELATIONID,correlationId)
-                .build();
+                .header(X_CORRELATIONID,correlationId);
+        ServerHttpRequest request;
+        if(tenant!=null)
+        {
+            builder=builder.header(X_TENANT,tenant);
+        }
+        request=builder.build();
         ServerWebExchange modifiedWebExchange=exchange.mutate().request(request).build();
         logger.info("Global Pre Filter executed");
         String finalCorrelationId = correlationId;
         return chain.filter(modifiedWebExchange).then(Mono.fromRunnable(()->{
             ServerHttpResponse serverHttpResponse=modifiedWebExchange.getResponse();
             HttpHeaders httpHeaders=serverHttpResponse.getHeaders();
-            httpHeaders.set(X_TENANT,tenant);
+            if(tenant!=null)
+            {
+                httpHeaders.set(X_TENANT,tenant);
+            }
             httpHeaders.set(X_CORRELATIONID, finalCorrelationId);
         }));
     }

@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManagerResolver;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.server.DefaultServerOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizationRequestResolver;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
-import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -28,9 +30,10 @@ public class SecurityConfig {
     @Value("${ADD_ALLOWEDHEADER}")
     private String addAllowedHeader;
 
-    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+    public UrlBasedCorsConfigurationSource corsConfigurationSource()
+    {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList(corsAllowedOrigins));
+        corsConfig.setAllowedOrigins(Collections.singletonList(corsAllowedOrigins));
         corsConfig.setMaxAge(8000L);
         corsConfig.addAllowedMethod(addAllowedMethod);
         corsConfig.addAllowedHeader(addAllowedHeader);
@@ -41,18 +44,26 @@ public class SecurityConfig {
         return source;
     }
 
+    private ServerOAuth2AuthorizationRequestResolver authorizationRequestResolver(ReactiveClientRegistrationRepository repository)
+    {
+        DefaultServerOAuth2AuthorizationRequestResolver requestResolver = new DefaultServerOAuth2AuthorizationRequestResolver(repository);
+        requestResolver.setAuthorizationRequestCustomizer(builder -> builder.scopes(null));
+        return requestResolver;
+    }
+
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(
             ServerHttpSecurity http,
             ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver,
-            ServerOAuth2AuthorizationRequestResolver requestResolver
+            ReactiveClientRegistrationRepository repository
     ) {
         String[] res = securityDisableModel.getBaseUrl().toArray(new String[0]);
         http.csrf().disable();
         http.cors().configurationSource(corsConfigurationSource());
         http.authorizeExchange(exchanges -> exchanges
                 .pathMatchers(res).permitAll()
-                .anyExchange().authenticated()).oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(requestResolver));
+                .anyExchange().authenticated())
+                .oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository)));
         http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
         return http.build();
     }

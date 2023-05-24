@@ -23,6 +23,35 @@ import static com.techsophy.tsf.services.gateway.constants.GatewayTestConstants.
 class MultitenancyFilterTest
 {
     @Test
+    void filterWithNullTenantTest()
+    {
+        MultiTenancyFilter multiTenancyFilter=new MultiTenancyFilter();
+        LinkedMultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        MockServerWebExchange webExchange = MockServerWebExchange
+                .builder(MockServerHttpRequest
+                        .get(TEST_URL)
+                        .headers(headers)
+                        .build())
+                .build();
+        GatewayFilterChain gatewayFilterChain = (exchange) -> {
+            headers.set(X_TENANT, TECHSOPHY_PLATFORM);
+            return ServerResponse.ok()
+                    .headers(h -> h.addAll(exchange.getResponse().getHeaders()))
+                    .bodyValue(RESPONSE_BODY)
+                    .then();
+        };
+        Mono<Void> result=multiTenancyFilter.filter(webExchange, gatewayFilterChain);
+        StepVerifier.create(result)
+                .expectSubscription()
+                .expectComplete()
+                .verify();
+        MockServerHttpResponse response=webExchange.getResponse();
+        HttpHeaders httpHeadersResponse=response.getHeaders();
+        Assertions.assertNull(httpHeadersResponse.get(X_TENANT));
+        Assertions.assertNotNull(httpHeadersResponse.get(X_CORRELATIONID));
+    }
+
+    @Test
     void filterWithDefaultHeaderTest()
     {
         MultiTenancyFilter multiTenancyFilter=new MultiTenancyFilter();

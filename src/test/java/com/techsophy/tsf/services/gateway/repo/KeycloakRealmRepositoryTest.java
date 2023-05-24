@@ -30,7 +30,7 @@ class KeycloakRealmRepositoryTest
     KeycloakRealmRepository keycloakRealmRepository;
 
     @Test
-    void testFindByRegistrationId()
+    void testFindByRegistrationIdRefreshSecretFalse()
     {
         Map<String,ClientRegistration> registrationMap=new HashMap<>();
         registrationMap.put(TECHSOPHY_PLATFORM,ClientRegistration
@@ -49,6 +49,34 @@ class KeycloakRealmRepositoryTest
         tenantRegistration.setRegistrations(tenantsList);
         ReflectionTestUtils.setField(keycloakRealmRepository,"tenants",tenantRegistration);
         Mockito.when(keycloakClientCredentialsService.fetchClientDetails(Mockito.anyString(),Mockito.anyBoolean())).thenReturn(CLIENT_SECRET);
+        Mono<ClientRegistration> clientRegistrationMono=keycloakRealmRepository.findByRegistrationId(TECHSOPHY_PLATFORM);
+        ClientRegistration clientRegistration=clientRegistrationMono.block();
+        Assertions.assertNotNull(clientRegistration);
+        Assertions.assertEquals(CLIENT_SECRET,clientRegistration.getClientSecret());
+        Assertions.assertEquals(CLIENT_ID,clientRegistration.getClientId());
+    }
+
+    @Test
+    void testFindByRegistrationIdRefreshSecretTrue()
+    {
+        Map<String,ClientRegistration> registrationMap=new HashMap<>();
+        registrationMap.put(TECHSOPHY_PLATFORM,ClientRegistration
+                .withRegistrationId(TECHSOPHY_PLATFORM)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .clientId(CLIENT_ID)
+                .redirectUriTemplate(TEST_URL+REALMS+TECHSOPHY_PLATFORM)
+                .authorizationUri(TEST_URL+REALMS+TECHSOPHY_PLATFORM)
+                .tokenUri(TEST_URL)
+                .build());
+        ReflectionTestUtils.setField(keycloakRealmRepository,"registrationMap",registrationMap);
+        List<String> tenantsList=new ArrayList<>();
+        tenantsList.add(TECHSOPHY_PLATFORM);
+        tenantsList.add(KIMS);
+        TenantRegistration tenantRegistration=new TenantRegistration();
+        tenantRegistration.setRegistrations(tenantsList);
+        ReflectionTestUtils.setField(keycloakRealmRepository,"tenants",tenantRegistration);
+        Mockito.when(keycloakClientCredentialsService.fetchClientDetails(Mockito.anyString(),Mockito.eq(false))).thenReturn(null);
+        Mockito.when(keycloakClientCredentialsService.fetchClientDetails(Mockito.anyString(),Mockito.eq(true))).thenReturn(CLIENT_SECRET);
         Mono<ClientRegistration> clientRegistrationMono=keycloakRealmRepository.findByRegistrationId(TECHSOPHY_PLATFORM);
         ClientRegistration clientRegistration=clientRegistrationMono.block();
         Assertions.assertNotNull(clientRegistration);

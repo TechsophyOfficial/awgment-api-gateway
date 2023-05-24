@@ -13,10 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class KeycloakClientCredentialServiceImpl implements KeycloakClientCredentialsService
 {
-    @Value("${keycloak.master.username}")
+    @Value("${keycloak.multi-realm.username}")
     String userName;
 
-    @Value("${keycloak.master.password}")
+    @Value("${keycloak.multi-realm.password}")
     String password;
 
     @Value("${keycloak.auth-server-url}")

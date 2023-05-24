@@ -2,6 +2,7 @@ package com.techsophy.tsf.services.gateway.repository;
 
 import com.techsophy.tsf.services.gateway.dto.TenantRegistration;
 import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -48,6 +49,10 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
         return tenants.getRegistrations().stream().filter(s -> s.equals(registrationId)).map(s ->
                 Mono.fromCallable(() ->{
                     String secret = service.fetchClientDetails(s,false);
+                    if(StringUtils.isBlank(secret))
+                    {
+                        secret=service.fetchClientDetails(s,true);
+                    }
                     return ClientRegistration.withClientRegistration(registrationMap.get(s))
                             .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
                             .clientSecret(secret)

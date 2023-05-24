@@ -2,6 +2,7 @@ package com.techsophy.tsf.services.gateway.repository;
 
 import com.techsophy.tsf.services.gateway.dto.TenantRegistration;
 import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class KeycloakRealmRepository implements ReactiveClientRegistrationRepository,Iterable<ClientRegistration>
 {
     @Autowired
@@ -52,8 +54,9 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
                     {
                        secret= service.fetchClientDetails(s, false);
                     }
-                    catch (IllegalArgumentException ie)
+                    catch (Exception e)
                     {
+                        log.error(e.getMessage());
                         secret=service.fetchClientDetails(s,true);
                     }
                     return ClientRegistration.withClientRegistration(registrationMap.get(s))

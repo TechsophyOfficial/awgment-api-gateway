@@ -13,9 +13,6 @@ public class GatewayTestConstants
     public static final String AUTHORIZATION="Authorization";
     public static final String RESPONSE_BODY="response body";
     public static final String CLIENT_ID="camunda-identity-service";
-    public static final String REGISTRATION_ID="keycloak";
     public static final String CLIENT_SECRET="101";
     public static final String TESTING_TENANT="kims";
-    public static final String URL_TEMPLATE="/oauth2/authorization/keycloak";
-    public static final String QUERY_PARAM="?_tenant=";
 }

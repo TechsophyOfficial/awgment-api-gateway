@@ -1,6 +1,16 @@
 keycloak:
   issuer-uri: ${KEYCLOAK_URL_AUTH:https://keycloak-tsplatform.techsophy.com}/auth/realms/
   realm.name: ${KEYCLOAK_REALM_NAME:techsophy-platform}
+  client.id: camunda-identity-service
+  auth-server-url: https://keycloak-tsplatform.techsophy.com/auth
+  multi-realm:
+    username: venkataramana
+    password: Tech@4567
+
+tenants:
+  registrations:
+    - techsophy-platform
+    - KIMS
 
 ADD_ALLOWEDHEADER: '*'
 ADD_ALLOWEDMETHOD: '*'

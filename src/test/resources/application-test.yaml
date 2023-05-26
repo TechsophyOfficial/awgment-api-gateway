@@ -4,8 +4,8 @@ keycloak:
   client.id: camunda-identity-service
   auth-server-url: https://keycloak-tsplatform.techsophy.com/auth
   multi-realm:
-    username: ${MULTI_REALM_USERNAME}
-    password: ${MULTI_REALM_PASSWORD}
+    username: ${MULTI_REALM_USERNAME:test}
+    password: ${MULTI_REALM_PASSWORD:test}
 
 tenants:
   registrations:

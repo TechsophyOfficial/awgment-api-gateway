@@ -1,5 +1,5 @@
-**2023/05/24 - 25063 - gateway: Add tenant header
-- A user having access to all tenant realms should be created in keycloak and his credentials have to be added as env variable in api-gateway pod
+**2023/05/24 - 25063 - gateway: Add tenant header**
+- A user having access to all tenant realms should be created in keycloak and his credentials have to be added as env variable in api-gateway pod and injected to application-config yaml for api-gateway
 ````
 multi-realm:
     username: ${MULTI_REALM_USERNAME}

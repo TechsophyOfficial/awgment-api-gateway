@@ -2,21 +2,35 @@ package com.techsophy.tsf.services.gateway.filter;
 
 import com.techsophy.idgenerator.IdGeneratorImpl;
 import com.techsophy.tsf.services.gateway.config.TenantAuthenticationManagerResolver;
+import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.reactive.filter.OrderedWebFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import org.springframework.web.util.UriBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
+
 import static com.techsophy.tsf.services.gateway.constants.GatewayConstants.X_CORRELATIONID;
 import static com.techsophy.tsf.services.gateway.constants.GatewayConstants.X_TENANT;
 
 @Component
-public class MultiTenancyFilter implements GlobalFilter
+public class MultiTenancyFilter implements GlobalFilter, OrderedWebFilter
 {
     private final Logger logger = LoggerFactory.getLogger(MultiTenancyFilter.class);
     private final IdGeneratorImpl idGenerator=new IdGeneratorImpl();
@@ -49,5 +63,39 @@ public class MultiTenancyFilter implements GlobalFilter
             }
             httpHeaders.set(X_CORRELATIONID, finalCorrelationId);
         }));
+    }
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+
+        String tenant="techsophy-platform";
+
+        ServerWebExchange modifiedWebExchange= exchange;
+        modifiedWebExchange.getResponse().beforeCommit(() -> Mono.fromRunnable(() -> {
+            ReactiveSecurityContextHolder.getContext().map(securityContext -> {
+                return securityContext.getAuthentication();
+            }).map(authentication -> {
+                return authentication.getClass().getName();
+            }).map(o -> Mono.fromRunnable(()->{
+                modifiedWebExchange.getResponse().getHeaders().set(X_TENANT,tenant);
+                if(modifiedWebExchange.getResponse().getStatusCode().is3xxRedirection()){
+                    String location = modifiedWebExchange.getResponse().getHeaders().getFirst("Location");
+                    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(location);
+                    builder.queryParam("_tenant",tenant);
+                    location = builder.toUriString();
+                    System.out.println(location);
+                    modifiedWebExchange.getResponse().getHeaders().set("Location",location);
+                }
+            })).block();
+
+
+        }));
+        return chain.filter(modifiedWebExchange);
+
+    }
+
+    @Override
+    public int getOrder() {
+        return 101;
     }
 }

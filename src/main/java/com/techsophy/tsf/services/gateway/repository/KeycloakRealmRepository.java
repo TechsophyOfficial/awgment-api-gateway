@@ -5,6 +5,7 @@ import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsServi
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrations;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
+@RefreshScope
 public class KeycloakRealmRepository implements ReactiveClientRegistrationRepository,Iterable<ClientRegistration>
 {
     @Autowired

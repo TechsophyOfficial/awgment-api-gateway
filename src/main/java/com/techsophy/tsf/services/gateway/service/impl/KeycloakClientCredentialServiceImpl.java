@@ -5,13 +5,17 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.context.scope.refresh.RefreshScopeRefreshedEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class KeycloakClientCredentialServiceImpl implements KeycloakClientCredentialsService
+@RefreshScope
+public class KeycloakClientCredentialServiceImpl implements KeycloakClientCredentialsService, ApplicationListener<RefreshScopeRefreshedEvent>
 {
     @Value("${keycloak.multi-realm.username}")
     String userName;
@@ -73,5 +77,10 @@ public class KeycloakClientCredentialServiceImpl implements KeycloakClientCreden
             throw new IllegalArgumentException();
         }
         return realm.clients().get(clientRepresentation.get(0).getId()).getSecret().getValue();
+    }
+
+    @Override
+    public void onApplicationEvent(RefreshScopeRefreshedEvent event) {
+        tenantSecretCache.clear();
     }
 }

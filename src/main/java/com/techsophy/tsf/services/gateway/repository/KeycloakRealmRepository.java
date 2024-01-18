@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -34,14 +33,10 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
     private KeycloakClientCredentialsService service;
 
     private Map<String, ClientRegistration> registrationMap;
-    private List<String> registrationsList;
     @Override
     public Iterator<ClientRegistration> iterator()
     {
-        String registrations=tenants.getRegistrations().get(0);
-        log.info("Tenant Names : "+registrations);
-        registrationsList= List.of(registrations.split(","));
-        registrationMap = registrationsList.parallelStream().map(s -> ClientRegistrations
+        registrationMap = tenants.getRegistrations().parallelStream().map(s -> ClientRegistrations
                 .fromOidcIssuerLocation(keycloakIssuerURI+s)
                 .registrationId(s).clientName(s).clientId(clientId).build()).collect(
                 Collectors.toMap(ClientRegistration::getRegistrationId, clientRegistration -> clientRegistration
@@ -52,7 +47,7 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
     @Override
     public Mono<ClientRegistration> findByRegistrationId(String registrationId)
     {
-        return registrationsList.stream().filter(s -> s.equals(registrationId)).map(s ->
+        return tenants.getRegistrations().stream().filter(s -> s.equals(registrationId)).map(s ->
                 Mono.fromCallable(() ->{
                     String secret;
                     try

@@ -9,6 +9,7 @@ import org.springdoc.core.SwaggerUiConfigParameters;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.gateway.route.InMemoryRouteDefinitionRepository;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.cloud.gateway.route.RouteDefinitionLocator;
 import org.springframework.context.annotation.Bean;
@@ -55,4 +56,10 @@ public class GatewayApplication {
                 .info(new io.swagger.v3.oas.models.info.Info().title("Gateway API").version(appVersion)
                         .license(new License().name("Apache 2.0").url("http://springdoc.org")));
     }
+
+    @Bean
+    public RouteDefinitionLocator routeDefinitionLocator() {
+        return new InMemoryRouteDefinitionRepository();
+    }
+
 }

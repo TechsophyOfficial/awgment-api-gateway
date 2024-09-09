@@ -310,4 +310,5 @@ logging.pattern.console: "%d{HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
 security:
   disabled:
     baseUrl:
-      - /**/config-server/**
+      - /config-server/**
+#      - /**/config-server/**

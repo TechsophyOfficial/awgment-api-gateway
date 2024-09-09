@@ -17,8 +17,8 @@ class GatewayApplicationTest
     SwaggerUiConfigParameters swaggerUiConfigParameters;
     @Mock
     RouteDefinitionLocator routeDefinitionLocator;
-    @Mock
-    RouteDefinition routeDefinition;
+//    @Mock
+//    RouteDefinition routeDefinition;
 
     @Test
     void apisLocatorNullTest()

@@ -15,6 +15,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.ServerWebExchange;
+
 import java.util.Collections;
 
 @Configuration
@@ -58,8 +59,8 @@ public class SecurityConfig {
             ReactiveClientRegistrationRepository repository
     ) {
         String[] res = securityDisableModel.getBaseUrl().toArray(new String[0]);
-        http.csrf().disable();
-        http.cors().configurationSource(corsConfigurationSource());
+        http.csrf(csrf -> csrf.disable());
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeExchange(exchanges -> exchanges
                 .pathMatchers(res).permitAll()
                 .anyExchange().authenticated())

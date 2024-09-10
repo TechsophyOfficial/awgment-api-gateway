@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -65,7 +66,7 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
                         secret=service.fetchClientDetails(s,true);
                     }
                     return ClientRegistration.withClientRegistration(registrationMap.get(s))
-                            .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
+                            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                             .clientSecret(secret)
                             .build();
                 })).findFirst().orElseThrow();

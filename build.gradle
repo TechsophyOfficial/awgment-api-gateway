@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.6' // Upgrade version
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '3.3.3' // Upgrade version
+    id 'io.spring.dependency-management' version '1.1.6'
     id 'com.google.cloud.tools.jib' version '3.0.0'
     id 'jacoco'
     id 'java'
@@ -10,9 +10,10 @@ group = 'com.techsophy.tsf'
 version = '1.2.0'
 description = 'tp-api-gateway'
 
-compileJava {
-    sourceCompatibility = 11
-    targetCompatibility = 11
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -40,23 +41,33 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     implementation 'org.springframework.cloud:spring-cloud-starter-security:2.2.5.RELEASE'
-    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.5.9'
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.2.0' // Updated Springdoc for Spring Boot 3
     implementation 'org.springframework.cloud:spring-cloud-starter-config:3.1.2'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.2'
-    runtimeOnly 'org.springframework.cloud:spring-cloud-dependencies:2020.0.3'
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation 'org.keycloak:keycloak-admin-client:15.0.2'
+    implementation 'org.keycloak:keycloak-admin-client:21.1.1' // Updated Keycloak client version
 
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testImplementation  'io.rest-assured:json-path:4.2.1'
-    testImplementation 'io.rest-assured:xml-path:4.2.1'
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation group: 'io.rest-assured', name: 'rest-assured', version:'4.2.1'
+    testImplementation 'io.rest-assured:json-path:5.4.0'
+    testImplementation 'io.rest-assured:xml-path:5.4.0'
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
     testImplementation 'io.projectreactor:reactor-test'
+
+    // Lombok dependencies
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    testImplementation 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+
+    // Mockito
+    testImplementation 'org.mockito:mockito-core:5.6.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.6.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 
@@ -78,8 +89,8 @@ test {
 jacocoTestReport {
     dependsOn test
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required.set(true)  // Update for newer Gradle versions
+        html.required.set(true) // Update for newer Gradle versions
     }
 }
 

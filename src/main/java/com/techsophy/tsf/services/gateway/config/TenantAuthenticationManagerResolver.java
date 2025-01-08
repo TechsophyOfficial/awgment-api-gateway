@@ -45,7 +45,7 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
     }
 
     public static String getIssuerFromToken(String idToken) throws JsonProcessingException {
-        String tenantName = "";
+        String tenantName = null;
         if(idToken!=null) {
             final Base64.Decoder decoder = Base64.getDecoder();
             if (idToken.startsWith("Bearer ")) {

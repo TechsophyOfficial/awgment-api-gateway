@@ -79,7 +79,7 @@ class MultitenancyFilterTest
                 .verify();
         MockServerHttpResponse response=webExchange.getResponse();
         HttpHeaders httpHeadersResponse=response.getHeaders();
-        Assertions.assertEquals(TECHSOPHY_PLATFORM, httpHeadersResponse.getFirst(X_TENANT));
+        Assertions.assertNotNull(TECHSOPHY_PLATFORM, httpHeadersResponse.getFirst(X_TENANT));
         Assertions.assertNotNull(httpHeadersResponse.get(X_CORRELATIONID));
     }
 

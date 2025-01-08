@@ -62,6 +62,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeExchange(exchanges -> exchanges
+                .pathMatchers("/api/ayuvubharosa/salesapp/token","/api/ayuvubharosa/salesapp/refresh/token","/api/ayuvubharosa/salesapp/send/otp/forgot-password","/api/ayuvubharosa/salesapp/validate","/api/ayuvubharosa/salesapp/password/{id}","/api/ayuvubharosa/salesapp/v1/password/{id}","/api/ayuvubharosa/salesapp/v1/send/otp/forgot-password").permitAll()
                 .pathMatchers(res).permitAll()
                 .anyExchange().authenticated())
                 .oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository)));

@@ -46,23 +46,25 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
 
     public static String getIssuerFromToken(String idToken) throws JsonProcessingException {
         String tenantName = "";
-        final Base64.Decoder decoder = Base64.getDecoder();
-        if (idToken.startsWith("Bearer ")) {
-            idToken = idToken.substring(7);
-        }
-        Map<String, Object> tokenBody = new HashMap<>();
-        List<String> tokenizer = Arrays.asList(idToken.split("\\."));
-        for (String token : tokenizer) {
-            if (token.equals(tokenizer.get(1))) {
-                tokenBody = string2JSONMap(new String(decoder.decode(token)));
+        if(idToken!=null) {
+            final Base64.Decoder decoder = Base64.getDecoder();
+            if (idToken.startsWith("Bearer ")) {
+                idToken = idToken.substring(7);
             }
-        }
-        if (tokenBody == null) {
-            throw new InvalidInputException("Invalid Token");
-        }
-        if (!tokenBody.isEmpty() && tokenBody.containsKey("iss")) {
-            List<String> elements = Arrays.asList(tokenBody.get("iss").toString().split("/"));
-            tenantName = elements.get(elements.size() - 1);
+            Map<String, Object> tokenBody = new HashMap<>();
+            List<String> tokenizer = Arrays.asList(idToken.split("\\."));
+            for (String token : tokenizer) {
+                if (token.equals(tokenizer.get(1))) {
+                    tokenBody = string2JSONMap(new String(decoder.decode(token)));
+                }
+            }
+            if (tokenBody == null) {
+                throw new InvalidInputException("Invalid Token");
+            }
+            if (!tokenBody.isEmpty() && tokenBody.containsKey("iss")) {
+                List<String> elements = Arrays.asList(tokenBody.get("iss").toString().split("/"));
+                tenantName = elements.get(elements.size() - 1);
+            }
         }
         return tenantName;
     }

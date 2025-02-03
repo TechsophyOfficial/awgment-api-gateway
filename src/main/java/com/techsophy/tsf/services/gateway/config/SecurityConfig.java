@@ -54,7 +54,7 @@ public class SecurityConfig {
         String[] res = securityDisableModel.getBaseUrl().toArray(new String[0]);
         http.csrf(csrf -> csrf.disable());
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-        http.authorizeExchange(exchanges -> exchanges.pathMatchers("**/config-server/**", "/config-server/**", "/api/config-server/**").permitAll().pathMatchers(res).permitAll().anyExchange().authenticated()).oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository)));
+        http.authorizeExchange(exchanges -> exchanges.pathMatchers("/config-server/**", "/api/config-server/**").permitAll().pathMatchers(res).permitAll().anyExchange().authenticated()).oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository)));
         http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
         return http.build();
     }

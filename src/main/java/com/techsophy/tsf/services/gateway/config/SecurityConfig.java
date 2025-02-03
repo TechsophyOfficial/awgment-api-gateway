@@ -31,40 +31,30 @@ public class SecurityConfig {
     @Value("${ADD_ALLOWEDHEADER}")
     private String addAllowedHeader;
 
-    public UrlBasedCorsConfigurationSource corsConfigurationSource()
-    {
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOriginPatterns(Collections.singletonList(corsAllowedOrigins));
         corsConfig.setMaxAge(8000L);
         corsConfig.addAllowedMethod(addAllowedMethod);
         corsConfig.addAllowedHeader(addAllowedHeader);
         corsConfig.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
 
-    private ServerOAuth2AuthorizationRequestResolver authorizationRequestResolver(ReactiveClientRegistrationRepository repository)
-    {
+    private ServerOAuth2AuthorizationRequestResolver authorizationRequestResolver(ReactiveClientRegistrationRepository repository) {
         DefaultServerOAuth2AuthorizationRequestResolver requestResolver = new DefaultServerOAuth2AuthorizationRequestResolver(repository);
         requestResolver.setAuthorizationRequestCustomizer(builder -> builder.scopes(null));
         return requestResolver;
     }
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(
-            ServerHttpSecurity http,
-            ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver,
-            ReactiveClientRegistrationRepository repository
-    ) {
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ReactiveAuthenticationManagerResolver<ServerWebExchange> authenticationManagerResolver, ReactiveClientRegistrationRepository repository) {
         String[] res = securityDisableModel.getBaseUrl().toArray(new String[0]);
         http.csrf(csrf -> csrf.disable());
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-        http.authorizeExchange(exchanges -> exchanges
-                .pathMatchers(res).permitAll()
-                .anyExchange().authenticated())
-                .oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository)));
+        http.authorizeExchange(exchanges -> exchanges.pathMatchers("**/config-server/**", "/config-server/**", "/api/config-server/**").permitAll().pathMatchers(res).permitAll().anyExchange().authenticated()).oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository)));
         http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
         return http.build();
     }

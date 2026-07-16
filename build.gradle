@@ -1,7 +1,7 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.4.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'com.google.cloud.tools.jib' version '3.0.0'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.google.cloud.tools.jib' version '3.5.3'
     id 'jacoco'
     id 'java'
 
@@ -12,8 +12,8 @@ version = '1.2.0'
 description = 'tp-api-gateway'
 
 compileJava {
-    sourceCompatibility = 11
-    targetCompatibility = 11
+    sourceCompatibility = 21
+    targetCompatibility = 21
 }
 
 repositories {
@@ -21,7 +21,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "Hoxton.SR8")
+    set('springCloudVersion', "2025.1.2")
 }
 jib {
 	container {
@@ -39,24 +39,21 @@ dependencies {
     implementation 'com.techsophy:id-generator:2.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-    implementation 'org.springframework.cloud:spring-cloud-starter-security'
-    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.5.9'
-    implementation 'org.springframework.cloud:spring-cloud-starter-config:3.1.2'
-    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.2'
-    runtimeOnly 'org.springframework.cloud:spring-cloud-dependencies:2020.0.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:3.0.0'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation 'org.keycloak:keycloak-admin-client:15.0.2'
+    implementation 'org.keycloak:keycloak-admin-client:26.0.9'
 
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testImplementation  'io.rest-assured:json-path:4.2.1'
-    testImplementation 'io.rest-assured:xml-path:4.2.1'
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    testImplementation  'io.rest-assured:json-path:6.0.1'
+    testImplementation 'io.rest-assured:xml-path:6.0.1'
 
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testCompileOnly 'org.projectlombok:lombok:1.18.42'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
     testImplementation('org.springframework.boot:spring-boot-starter-test')
-    testImplementation group: 'io.rest-assured', name: 'rest-assured', version:'4.2.1'
+    testImplementation 'io.rest-assured:rest-assured:6.0.1'
     testImplementation 'io.projectreactor:reactor-test'
 }
 
@@ -79,8 +76,8 @@ test {
 jacocoTestReport {
     dependsOn test
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required = true
+        html.required = true
     }
 }
 

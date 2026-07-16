@@ -1,7 +1,9 @@
 package com.techsophy.tsf.services.gateway.service.impl;
 
 import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService;
+import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +44,14 @@ public class KeycloakClientCredentialServiceImpl implements KeycloakClientCreden
     {
         if(keycloak==null)
         {
-            keycloak = Keycloak.getInstance(keycloakAuthUrl, adminRealmName, userName, password, adminClientId);
+            keycloak = KeycloakBuilder.builder()
+                    .serverUrl(keycloakAuthUrl)
+                    .realm(adminRealmName)
+                    .grantType(OAuth2Constants.PASSWORD)
+                    .username(userName)
+                    .password(password)
+                    .clientId(adminClientId)
+                    .build();
         }
     }
 

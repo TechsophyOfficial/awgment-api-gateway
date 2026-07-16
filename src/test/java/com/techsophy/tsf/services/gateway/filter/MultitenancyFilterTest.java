@@ -30,7 +30,7 @@ class MultitenancyFilterTest
         MockServerWebExchange webExchange = MockServerWebExchange
                 .builder(MockServerHttpRequest
                         .get(TEST_URL)
-                        .headers(headers)
+                        .headers(new HttpHeaders(headers))
                         .build())
                 .build();
         GatewayFilterChain gatewayFilterChain = (exchange) -> {
@@ -60,7 +60,7 @@ class MultitenancyFilterTest
         MockServerWebExchange webExchange = MockServerWebExchange
                 .builder(MockServerHttpRequest
                 .get(TEST_URL)
-                        .headers(headers)
+                        .headers(new HttpHeaders(headers))
                         .build())
                 .build();
         GatewayFilterChain gatewayFilterChain = (exchange) -> {
@@ -89,7 +89,7 @@ class MultitenancyFilterTest
         MockServerWebExchange webExchange = MockServerWebExchange
                 .builder(MockServerHttpRequest
                         .get(TEST_URL)
-                        .headers(headers)
+                        .headers(new HttpHeaders(headers))
                         .build())
                 .build();
         GatewayFilterChain gatewayFilterChain = (exchange) -> {

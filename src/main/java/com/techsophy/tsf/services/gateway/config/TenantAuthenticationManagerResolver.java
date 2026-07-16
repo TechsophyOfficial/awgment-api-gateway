@@ -7,6 +7,7 @@ import com.techsophy.tsf.services.gateway.exception.InvalidInputException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.ReactiveAuthenticationManagerResolver;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.oauth2.server.resource.authentication.JwtReactiveAuthenticationManager;
 import org.springframework.stereotype.Component;
@@ -38,7 +39,7 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
 
     private ReactiveAuthenticationManager fromTenant(String tenant) {
         return (Optional.ofNullable(keycloakIssuerUri + tenant)
-                .map(ReactiveJwtDecoders::fromIssuerLocation)
+                .<ReactiveJwtDecoder>map(ReactiveJwtDecoders::fromIssuerLocation)
                 .map(JwtReactiveAuthenticationManager::new)
                 .orElseThrow(() -> new IllegalArgumentException("unknown tenant"))::authenticate);
     }

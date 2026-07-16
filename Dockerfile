@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11
+FROM eclipse-temurin:21-jre-jammy
 RUN addgroup spring && adduser  --ingroup spring --disabled-password spring
 USER 10001
 WORKDIR /home/spring/app

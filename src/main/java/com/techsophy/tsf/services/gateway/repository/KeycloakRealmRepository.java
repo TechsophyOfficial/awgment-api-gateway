@@ -1,3 +1,5 @@
+
+
 package com.techsophy.tsf.services.gateway.repository;
 
 import com.techsophy.tsf.services.gateway.dto.TenantRegistration;
@@ -60,7 +62,7 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
                         secret=service.fetchClientDetails(s,true);
                     }
                     return ClientRegistration.withClientRegistration(registrationMap.get(s))
-                            .clientAuthenticationMethod(ClientAuthenticationMethod.BASIC)
+                            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                             .clientSecret(secret)
                             .build();
                 })).findFirst().orElseThrow();

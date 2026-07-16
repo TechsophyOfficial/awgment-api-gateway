@@ -8,7 +8,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jdk.jfr.Description;
 import org.json.JSONException;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -69,7 +69,7 @@ public class APIGatewayIT {
 
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/accounts/v1/keycloak/groups/e6541116-9ade-4f57-8972-7f488cae5311");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @Order(1)
     @org.junit.jupiter.api.Test
@@ -81,7 +81,7 @@ public class APIGatewayIT {
         Response response = augmntapi.post(payload, "com/techsophy/tsf/api/accounts/v1/keycloak/groups");
         System.out.println(response);
         idList = response.jsonPath().getList("data.id");
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @Description("GroupsController")
@@ -90,7 +90,7 @@ public class APIGatewayIT {
     void deleteGroup() {
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/accounts/v1/keycloak/groups/" + idList.get(0));
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("groupDataControllerTests")
@@ -108,7 +108,7 @@ public class APIGatewayIT {
         System.out.println(response);
         grpId = response.path("data.id");
         System.out.println(grpId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @Description("groupDataControllerTests")
@@ -136,7 +136,7 @@ public class APIGatewayIT {
     void getGroupByIdGroupDataController() {
         Response response = augmntapi.get("https://api-gateway.techsophy.com/api/accounts/v1/groups/994125945178796032");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @Description("GroupDataControllerController")
@@ -145,7 +145,7 @@ public class APIGatewayIT {
     void deleteGroupDataController() {
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/accounts/v1/groups/" + grpId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("GroupsDataController")
@@ -156,7 +156,7 @@ public class APIGatewayIT {
                 "}";
         Response response = augmntapi.post(payload, "com/techsophy/tsf/api/accounts/v1/groups/994125945178796032/roles");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
 
     }
 
@@ -172,7 +172,7 @@ public class APIGatewayIT {
         System.out.println(response);
         themeId = response.path("data.id");
         System.out.println(themeId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
 
     }
 
@@ -181,7 +181,7 @@ public class APIGatewayIT {
     void getThemesDataById() {
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/accounts/v1/themes/981059835294883840");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("ThemesController")
@@ -210,7 +210,7 @@ public class APIGatewayIT {
     void deleteThemesDataById() {
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/accounts/v1/themes/" + themeId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("ThemesController")
@@ -218,7 +218,7 @@ public class APIGatewayIT {
     void downloadTheme() {
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/accounts/v1/themes/981059835294883840/export");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("UserManagementInKeyCloakController")
@@ -242,7 +242,7 @@ public class APIGatewayIT {
         userId = response.path("data.id");
         System.out.println(response);
         System.out.println("user"+userId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
 
     }
 
@@ -257,7 +257,7 @@ public class APIGatewayIT {
                 "}";
         Response response = augmntapi.post(payload, "com/techsophy/tsf/api/accounts/v1/keycloak/users/roles");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
 
     }
 
@@ -284,7 +284,7 @@ public class APIGatewayIT {
 
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/accounts/v1/keycloak/roles");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
 
@@ -336,7 +336,7 @@ public class APIGatewayIT {
                 "}";
         Response response = augmntapi.post(payload, "com/techsophy/tsf/api/accounts/v1/users/preferences");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
 
     }
 
@@ -345,7 +345,7 @@ public class APIGatewayIT {
     void deleteUserPreferencesThemeDataByUserId() {
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/accounts/v1/users/preferences");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @Description("Should Be Able To Create realm ")
     @org.junit.jupiter.api.Test
@@ -357,7 +357,7 @@ public class APIGatewayIT {
 
         Response response = augmntapi.post(payload, "/com/techsophy/tsf/api/admin/v1//keycloak/realm");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @Description("Should Be Able To Create Tenant ")
@@ -366,7 +366,7 @@ public class APIGatewayIT {
         String payload = "";
         Response response = augmntapi.post(payload, "/com/techsophy/tsf/api/admin/v1//keycloak/realm");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @Description("Should Be Able To Create Tenant ")
@@ -391,7 +391,7 @@ public class APIGatewayIT {
         System.out.println(response);
         tenantId = response.path("data.id");
         System.out.println(tenantId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @Description("Should Be Able get All Tenants ")
@@ -416,7 +416,7 @@ public class APIGatewayIT {
     void getTenantById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/admin/v1/tenants/956421427105792000");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -424,7 +424,7 @@ public class APIGatewayIT {
     void deleteTenantById() {
         Response response1 = augmntapi.delete("/com/techsophy/tsf/api/admin/v1/tenants/" + tenantId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(11)
@@ -460,7 +460,7 @@ public class APIGatewayIT {
     void getCaseById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/case-modeler/v1/cases/" + caseId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -468,7 +468,7 @@ public class APIGatewayIT {
     void deleteCaseById() {
         Response response1 = augmntapi.delete("/com/techsophy/tsf/api/case-modeler/v1/cases/" +caseId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     void getAllCheckLists() {
@@ -508,7 +508,7 @@ public class APIGatewayIT {
         System.out.println(response);
         checklistId = BigInteger.valueOf(response.path("data.id"));
         System.out.println(checklistId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -517,7 +517,7 @@ public class APIGatewayIT {
 
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/checklist-modeler/v1/checklists/"+checklistId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -526,14 +526,14 @@ public class APIGatewayIT {
 
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/checklist-modeler/v1/checklists/" +checklistId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void GetAllItems() {
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/checklist-modeler/v1/checklist-items");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(17)
@@ -560,14 +560,14 @@ public class APIGatewayIT {
         System.out.println(response);
         checkListItem = response.path("data.id");
         System.out.println(checkListItem);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(18)
     void GetChecklistItemById() {
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/checklist-modeler/v1/checklist-items/"+checkListItem);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(19)
@@ -575,7 +575,7 @@ public class APIGatewayIT {
 
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/checklist-modeler/v1/checklist-items/" +checkListItem);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     void GetAllChecklistGroups() {
@@ -609,14 +609,14 @@ public class APIGatewayIT {
         System.out.println(response);
         checkListGroupId = BigInteger.valueOf(response.path("data.id"));
         System.out.println(checkListGroupId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(21)
     void GetChecklistGroupById() {
         Response response1 = augmntapi.get("https://api-gateway.techsophy.com/api/checklist-modeler/v1/checklist-groups/"+checkListGroupId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(22)
@@ -624,14 +624,14 @@ public class APIGatewayIT {
 
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/checklist-modeler/v1/checklist-groups/" +checkListGroupId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(23)
     void GetAllDocTypes() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/dms/v1/document-types");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
 
     }
 
@@ -649,7 +649,7 @@ public class APIGatewayIT {
         System.out.println(response);
         docId = response.path("data.id");
         System.out.println(docId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -657,7 +657,7 @@ public class APIGatewayIT {
     void GetDocTypeById() {
         Response response1 = augmntapi.get("com/techsophy/tsf/api/dms/v1/document-types/" +docId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
 
     }
 
@@ -666,7 +666,7 @@ public class APIGatewayIT {
     void DeleteDocTypeById() {
         Response response = augmntapi.delete("com/techsophy/tsf/api/dms/v1/document-types/" +docId);
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -701,7 +701,7 @@ public class APIGatewayIT {
 
         Response response = augmntapi.post(payload, "/dms/v1/documents/publish");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
 
     }
 
@@ -745,7 +745,7 @@ public class APIGatewayIT {
     void getDocTypeById() {
         Response response1 = augmntapi.get("/dms/v1/history/documents/908590613825437696");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
 
     }
     @org.junit.jupiter.api.Test
@@ -797,28 +797,28 @@ public class APIGatewayIT {
         Response response = augmntapi.post(payload, "/com/techsophy/tsf/api/escalation-matrix-modeler/v1/escalation-matrices");
         System.out.println(response);
         escalationId = response.path("data.id");
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void FetchNext() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/escalation-matrix-modeler/v1/escalation-matrix/950413133565612037/levels/950413133565612037");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void getAllData() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/escalation-matrix-modeler/v1/escalation-matrices");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void getEscalationById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/escalation-matrix-modeler/v1/escalation-matrix/950413133565612037");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
 
     }
 
@@ -827,7 +827,7 @@ public class APIGatewayIT {
     void DeleteById() {
         Response response1 = augmntapi.delete("/com/techsophy/tsf/api/escalation-matrix-modeler/v1/escalation-matrix/" + escalationId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
 
     }
     @org.junit.jupiter.api.Test
@@ -848,7 +848,7 @@ public class APIGatewayIT {
         System.out.println(response);
         formId = response.path("data.id");
         System.out.println(formId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @Description("Should Be Able To get form by id ")
@@ -857,7 +857,7 @@ public class APIGatewayIT {
     void getFormById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/form-modeler/v1/forms/" +formId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
 
     }
 
@@ -867,7 +867,7 @@ public class APIGatewayIT {
     void deleteFromById() {
         Response response1 = augmntapi.delete("/com/techsophy/tsf/api/form-modeler/v1/forms/" +formId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("Should Be Able get To by id ")
@@ -917,21 +917,21 @@ public class APIGatewayIT {
                 "}";
         Response response = augmntapi.post(payload, "com/techsophy/tsf/api/rules/v1/execute-dmn");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void fetchDRDDetails() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/rules/v1/dmn/831066622685913100");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void listAllDmn() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/rules/v1/dmn");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("Should Be Able To execute DMN")
@@ -946,14 +946,14 @@ public class APIGatewayIT {
                 "}";
         Response response = augmntapi.put(payload, "/com/techsophy/tsf/api/rules/v1/dmn");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void deleteDRDDetails() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/rules/v1/dmn/934926506920218624");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(32)
@@ -990,7 +990,7 @@ public class APIGatewayIT {
     void getRuleById() {
         Response response1 = augmntapi.get("com/techsophy/tsf/api/rule-modeler/v1/rules/" +ruleId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -998,7 +998,7 @@ public class APIGatewayIT {
     void deleteRuleById() {
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/rule-modeler/v1/rules/" +ruleId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
 
 
     }
@@ -1111,14 +1111,14 @@ public class APIGatewayIT {
         System.out.println(response);
         runTimeFormidList = response.jsonPath().getList("data.id");
         System.out.println();
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
     void getRuntimeFormById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/form-runtime/v1/forms/13");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -1143,7 +1143,7 @@ public class APIGatewayIT {
     void deleteFormById() {
         Response response1 = augmntapi.delete("/com/techsophy/tsf/api/form-runtime/v1/forms/994122561634369536");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -1180,7 +1180,7 @@ public class APIGatewayIT {
         System.out.println(response);
         runTimeFormDataId = response.path("data.id");
         System.out.println(runTimeFormDataId);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -1239,7 +1239,7 @@ public class APIGatewayIT {
 //    void deleteFormDataById() {
 //        Response response1 = augmntapi.delete("/api/form-runtime/v1/form-data/940164331383975936");
 //        System.out.println(response1);
-//        Assert.assertEquals(response1.statusCode(), 200);
+//        Assertions.assertEquals(response1.statusCode(), 200);
 //    }
 
     @org.junit.jupiter.api.Test
@@ -1256,13 +1256,13 @@ public class APIGatewayIT {
                 "}";
         Response response = augmntapi.post(payload, "/com/techsophy/tsf/api/form-runtime/v1/form-data/validate");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     void downloadTemplateById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/template-modeler/v1/templates/61ba222bad3168749c208ef7");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @Description("Should Be Able get all templates ")
@@ -1288,14 +1288,14 @@ public class APIGatewayIT {
     void getTemplateById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/template-modeler/v1/templates/61ba222bad3168749c208ef7");
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     void createComment() {
         String payload = "";
         Response response = augmntapi.post(payload, "/com/techsophy/tsf/api/camunda/service/v1/comment/create");
         System.out.println(response);
-        Assert.assertEquals(response.statusCode(), 200);
+        Assertions.assertEquals(response.statusCode(), 200);
     }
     @org.junit.jupiter.api.Test
     @Order(40)
@@ -1315,7 +1315,7 @@ public class APIGatewayIT {
     void deleteProcess(){
         Response response1 = augmntapi.delete("com/techsophy/tsf/api/process-modeler/v1/processes/" + workFlowId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test
@@ -1339,7 +1339,7 @@ public class APIGatewayIT {
     void getWorkFlowById() {
         Response response1 = augmntapi.get("/com/techsophy/tsf/api/process-modeler/v1/processes/" +workFlowId);
         System.out.println(response1);
-        Assert.assertEquals(response1.statusCode(), 200);
+        Assertions.assertEquals(response1.statusCode(), 200);
     }
 
     @org.junit.jupiter.api.Test

@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrations;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.stereotype.Component;
@@ -41,7 +40,7 @@ public class KeycloakRealmRepository implements ReactiveClientRegistrationReposi
         String registrations=tenants.getRegistrations().get(0);
         log.info("Tenant Names : "+registrations);
         registrationsList= List.of(registrations.split(","));
-        registrationMap = registrationsList.parallelStream().map(s -> ClientRegistrations
+        registrationMap = registrationsList.parallelStream().map(s -> OidcClientRegistrations
                 .fromOidcIssuerLocation(keycloakIssuerURI+s)
                 .registrationId(s).clientName(s).clientId(clientId).build()).collect(
                 Collectors.toMap(ClientRegistration::getRegistrationId, clientRegistration -> clientRegistration

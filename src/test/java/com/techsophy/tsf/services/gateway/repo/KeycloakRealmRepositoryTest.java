@@ -3,6 +3,7 @@ package com.techsophy.tsf.services.gateway.repo;
 import com.techsophy.tsf.services.gateway.dto.TenantRegistration;
 import com.techsophy.tsf.services.gateway.repository.KeycloakRealmRepository;
 import com.techsophy.tsf.services.gateway.service.KeycloakClientCredentialsService;
+import com.techsophy.tsf.services.gateway.support.MockKeycloakServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,7 @@ class KeycloakRealmRepositoryTest {
         tenantRegistration.setRegistrations(registrationsList);
         ReflectionTestUtils.setField(keycloakRealmRepository, "tenants", tenantRegistration);
         ReflectionTestUtils.setField(keycloakRealmRepository, "clientId", "camunda-identity-service");
-        ReflectionTestUtils.setField(keycloakRealmRepository, "keycloakIssuerURI", "https://keycloak-tsplatform.techsophy.com/auth/realms/");
+        ReflectionTestUtils.setField(keycloakRealmRepository, "keycloakIssuerURI", MockKeycloakServer.issuerPrefix());
         Iterator<ClientRegistration> iterator = keycloakRealmRepository.iterator();
         Assertions.assertTrue(iterator.hasNext());
         Assertions.assertEquals(KIMS, iterator.next().getRegistrationId());

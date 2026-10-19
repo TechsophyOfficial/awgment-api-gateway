@@ -1,6 +1,7 @@
 package com.techsophy.tsf.services.gateway.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.techsophy.tsf.services.gateway.support.MockKeycloakServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMessage;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ServerWebExchange;
 import static com.techsophy.tsf.services.gateway.constants.GatewayConstants.TEST_ACTIVE_PROFILE;
@@ -32,10 +35,16 @@ class TenantAuthenticationManagerResolverTest {
     @InjectMocks
     TenantAuthenticationManagerResolver tenantAuthenticationManagerResolver;
 
+    @DynamicPropertySource
+    static void keycloakProperties(DynamicPropertyRegistry registry)
+    {
+        registry.add("keycloak.issuer-uri", MockKeycloakServer::issuerPrefix);
+    }
+
     @BeforeEach
     public void setUp()
     {
-        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"keycloakIssuerUri","https://keycloak-tsplatform.techsophy.com/auth/realms/");
+        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"keycloakIssuerUri",MockKeycloakServer.issuerPrefix());
     }
 
     @Test

@@ -10,7 +10,13 @@ jobs:
     docker:
       - image: cimg/openjdk:11.0.11
     steps:
-      - checkout
+      # CircleCI's project SSH deploy key no longer has access to GitHub.
+      # This repository is public; fetch the exact release tag over HTTPS.
+      - run:
+          name: Checkout release tag over HTTPS
+          command: |
+            GIT_TERMINAL_PROMPT=0 git clone --depth 1 --branch "$CIRCLE_TAG" \
+              https://github.com/TechsophyOfficial/awgment-api-gateway.git .
       - run:
           name: fix permission denied
           command: chmod +x ./gradlew

@@ -93,9 +93,20 @@ class TenantAuthenticationManagerResolverTest {
                 Route.async().id("dms-public").uri("http://dms").predicate(e -> true).build());
         Assertions.assertNull(TenantAuthenticationManagerResolver.toTenant(exchange));
         Assertions.assertTrue(output.getOut().contains(
-                "Public request on route dms-public (GET) has a non-JWT Authorization header 'Basic ****'"));
+                "Public request on route dms-public (GET) has an Authorization header 'Basic ****' that is not a Bearer token"));
         Assertions.assertFalse(output.getOut().contains("dXNlcjpwYXNzd29yZA"));
         Assertions.assertFalse(output.getErr().contains("ParseException"));
+    }
+
+    @Test
+    void toTenantIgnoresBareJwtTest(CapturedOutput output)
+    {
+        // a well formed JWT without the Bearer scheme is never verified, so its issuer must not become the tenant
+        String bareJwt = sign(claims(TENANT));
+        Assertions.assertNull(TenantAuthenticationManagerResolver.toTenant(exchange(bareJwt)));
+        Assertions.assertTrue(output.getOut().contains("has an Authorization header '****' that is not a Bearer token"));
+        Assertions.assertFalse(output.getOut().contains(bareJwt));
+        Assertions.assertEquals(TENANT, TenantAuthenticationManagerResolver.toTenant(exchange("Bearer " + bareJwt)));
     }
 
     @Test

@@ -62,16 +62,21 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
         if (stoken == null) {
             return null;
         }
-        try {
-            return getIssuerFromToken(stoken);
-        } catch (Exception e) {
-            // only public routes get here: on private routes Spring Security has already rejected such a header.
-            // The request is still routed; the path is not logged because public paths can carry link codes
-            Route route = request.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
-            log.info("Public request on route {} ({}) has a non-JWT Authorization header '{}'; tenant not taken from it",
-                    route == null ? "unknown" : route.getId(), request.getRequest().getMethodValue(), maskAuthorization(stoken));
-            return null;
+        // only a Bearer token has been verified by Spring Security, so a tenant is never taken from anything else,
+        // a bare JWT included
+        if (stoken.regionMatches(true, 0, BEARER, 0, BEARER.length())) {
+            try {
+                return getIssuerFromToken(stoken);
+            } catch (Exception e) {
+                // not reached in practice: Spring Security rejects a malformed Bearer token first
+            }
         }
+        // only public routes get here: on private routes Spring Security has already rejected such a header.
+        // The request is still routed; the path is not logged because public paths can carry link codes
+        Route route = request.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
+        log.info("Public request on route {} ({}) has an Authorization header '{}' that is not a Bearer token; tenant not taken from it",
+                route == null ? "unknown" : route.getId(), request.getRequest().getMethodValue(), maskAuthorization(stoken));
+        return null;
     }
 
     /** Keeps only the scheme, e.g. "Basic ****", so credentials never reach the log. */

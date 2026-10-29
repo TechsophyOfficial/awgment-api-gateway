@@ -11,11 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.ReactiveAuthenticationManagerResolver;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.oauth2.server.resource.BearerTokenError;
 import org.springframework.security.oauth2.server.resource.BearerTokenErrorCodes;
-import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtReactiveAuthenticationManager;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -43,11 +41,11 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
         try {
             tenant = getIssuerFromToken(request.getRequest().getHeaders().getFirst("Authorization"));
         } catch (ParseException e) {
-            return Mono.error(bearerTokenException(HttpStatus.FORBIDDEN, MALFORMED_TOKEN));
+            return Mono.error(invalidToken(MALFORMED_TOKEN));
         }
         // same parsing as KeycloakRealmRepository: a single comma separated entry
         if (!Arrays.asList(tenants.getRegistrations().get(0).split(",")).contains(tenant)) {
-            return Mono.error(bearerTokenException(HttpStatus.UNAUTHORIZED, INVALID_TENANT));
+            return Mono.error(invalidToken(INVALID_TENANT));
         }
         // the realm's OpenID configuration could not be loaded; nothing is cached, so the next request retries
         return Mono.fromCallable(() -> this.authenticationManagers.computeIfAbsent(tenant, this::fromTenant))
@@ -70,17 +68,14 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
     private ReactiveAuthenticationManager fromTenant(String tenant) {
         JwtReactiveAuthenticationManager authenticationManager =
                 new JwtReactiveAuthenticationManager(ReactiveJwtDecoders.fromIssuerLocation(keycloakIssuerUri + tenant));
-        // Spring reports every rejected token as 401; claim validation failures (expiry, issuer) stay 401,
-        // structure and signature failures become 403
+        // rejected tokens (signature, expiry, issuer) keep Spring's 401 invalid_token, as RFC 6750 requires;
+        // the decoder reports a failed signing key (JWKS) fetch as IllegalStateException
         return authentication -> authenticationManager.authenticate(authentication)
-                .onErrorMap(e -> e instanceof InvalidBearerTokenException && !(e.getCause() instanceof JwtValidationException),
-                        e -> bearerTokenException(HttpStatus.FORBIDDEN, INVALID_TOKEN))
-                // the decoder reports a failed signing key (JWKS) fetch as IllegalStateException
                 .onErrorMap(IllegalStateException.class, TenantAuthenticationManagerResolver::keycloakUnavailable);
     }
 
-    private static OAuth2AuthenticationException bearerTokenException(HttpStatus status, String description) {
-        return new OAuth2AuthenticationException(new BearerTokenError(BearerTokenErrorCodes.INVALID_TOKEN, status, description, null));
+    private static OAuth2AuthenticationException invalidToken(String description) {
+        return new OAuth2AuthenticationException(new BearerTokenError(BearerTokenErrorCodes.INVALID_TOKEN, HttpStatus.UNAUTHORIZED, description, null));
     }
 
     private static ResponseStatusException keycloakUnavailable(Throwable e) {

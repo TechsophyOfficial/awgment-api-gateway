@@ -82,8 +82,8 @@ class TenantAuthenticationManagerResolverTest {
     @Test
     void resolveMalformedTokenTest()
     {
-        assertStatus(tenantAuthenticationManagerResolver.resolve(exchange("Bearer abc")), HttpStatus.FORBIDDEN);
-        assertStatus(tenantAuthenticationManagerResolver.resolve(exchange("Bearer aaa.bbb.ccc")), HttpStatus.FORBIDDEN);
+        assertStatus(tenantAuthenticationManagerResolver.resolve(exchange("Bearer abc")), HttpStatus.UNAUTHORIZED);
+        assertStatus(tenantAuthenticationManagerResolver.resolve(exchange("Bearer aaa.bbb.ccc")), HttpStatus.UNAUTHORIZED);
     }
 
     @Test
@@ -107,8 +107,8 @@ class TenantAuthenticationManagerResolverTest {
     {
         String[] token = sign(claims(TENANT)).split("\\.");
         String[] otherToken = sign(claims(TENANT).subject("someone-else")).split("\\.");
-        assertStatus(authenticate(token[0] + "." + otherToken[1] + "." + token[2]), HttpStatus.FORBIDDEN);
-        assertStatus(authenticate(new PlainJWT(claims(TENANT).build()).serialize()), HttpStatus.FORBIDDEN);
+        assertStatus(authenticate(token[0] + "." + otherToken[1] + "." + token[2]), HttpStatus.UNAUTHORIZED);
+        assertStatus(authenticate(new PlainJWT(claims(TENANT).build()).serialize()), HttpStatus.UNAUTHORIZED);
     }
 
     @Test

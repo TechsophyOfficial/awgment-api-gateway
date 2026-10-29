@@ -6,6 +6,8 @@ import com.techsophy.tsf.services.gateway.dto.TenantRegistration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
@@ -22,11 +24,13 @@ import reactor.core.publisher.Mono;
 import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 import static com.techsophy.tsf.services.gateway.constants.GatewayConstants.*;
 
 @Component
 @Slf4j
 public class TenantAuthenticationManagerResolver implements ReactiveAuthenticationManagerResolver<ServerWebExchange> {
+    private static final Pattern AUTH_SCHEME = Pattern.compile("[A-Za-z][A-Za-z0-9-]{0,19}");
     private final Map<String, ReactiveAuthenticationManager> authenticationManagers = new ConcurrentHashMap<>();
 
     @Value("${keycloak.issuer-uri}")
@@ -61,9 +65,20 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
         try {
             return getIssuerFromToken(stoken);
         } catch (Exception e) {
-            e.printStackTrace();
+            // only public routes get here: on private routes Spring Security has already rejected such a header.
+            // The request is still routed; the path is not logged because public paths can carry link codes
+            Route route = request.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
+            log.info("Public request on route {} ({}) has a non-JWT Authorization header '{}'; tenant not taken from it",
+                    route == null ? "unknown" : route.getId(), request.getRequest().getMethodValue(), maskAuthorization(stoken));
             return null;
         }
+    }
+
+    /** Keeps only the scheme, e.g. "Basic ****", so credentials never reach the log. */
+    static String maskAuthorization(String authorization) {
+        int space = authorization.indexOf(' ');
+        String scheme = space > 0 ? authorization.substring(0, space) : "";
+        return (AUTH_SCHEME.matcher(scheme).matches() ? scheme + " " : "") + "****";
     }
 
     private ReactiveAuthenticationManager fromTenant(String tenant) {

@@ -7,8 +7,13 @@ import com.techsophy.tsf.services.gateway.support.MockKeycloakServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.cloud.gateway.route.Route;
+import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
@@ -31,6 +36,7 @@ import java.util.List;
 import static com.techsophy.tsf.services.gateway.constants.GatewayConstants.TEST_ACTIVE_PROFILE;
 
 @ActiveProfiles(TEST_ACTIVE_PROFILE)
+@ExtendWith(OutputCaptureExtension.class)
 @SpringBootTest(properties = {"CORS_ALLOWEDORIGINS=VALUE", "ADD_ALLOWEDMETHOD=VALUE2", "ADD_ALLOWEDHEADER=VALUE3"})
 class TenantAuthenticationManagerResolverTest {
 
@@ -77,6 +83,29 @@ class TenantAuthenticationManagerResolverTest {
         Assertions.assertNull(TenantAuthenticationManagerResolver.toTenant(exchange(null)));
         Assertions.assertNull(TenantAuthenticationManagerResolver.toTenant(exchange("Bearer abc")));
         Assertions.assertEquals("server.example.com", TenantAuthenticationManagerResolver.toTenant(exchange(idToken)));
+    }
+
+    @Test
+    void toTenantLogsMaskedNonJwtHeaderTest(CapturedOutput output)
+    {
+        ServerWebExchange exchange = exchange("Basic dXNlcjpwYXNzd29yZA==");
+        exchange.getAttributes().put(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR,
+                Route.async().id("dms-public").uri("http://dms").predicate(e -> true).build());
+        Assertions.assertNull(TenantAuthenticationManagerResolver.toTenant(exchange));
+        Assertions.assertTrue(output.getOut().contains(
+                "Public request on route dms-public (GET) has a non-JWT Authorization header 'Basic ****'"));
+        Assertions.assertFalse(output.getOut().contains("dXNlcjpwYXNzd29yZA"));
+        Assertions.assertFalse(output.getErr().contains("ParseException"));
+    }
+
+    @Test
+    void maskAuthorizationTest()
+    {
+        Assertions.assertEquals("Basic ****", TenantAuthenticationManagerResolver.maskAuthorization("Basic dXNlcjpwYXNz"));
+        Assertions.assertEquals("Bearer ****", TenantAuthenticationManagerResolver.maskAuthorization("Bearer abc"));
+        // no scheme: the whole value may be a credential
+        Assertions.assertEquals("****", TenantAuthenticationManagerResolver.maskAuthorization("dXNlcjpwYXNz"));
+        Assertions.assertEquals("****", TenantAuthenticationManagerResolver.maskAuthorization("secret:value rest"));
     }
 
     @Test

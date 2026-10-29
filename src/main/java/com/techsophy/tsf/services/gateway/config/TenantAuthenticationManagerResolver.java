@@ -43,8 +43,9 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
         } catch (ParseException e) {
             return Mono.error(invalidToken(MALFORMED_TOKEN));
         }
-        // same parsing as KeycloakRealmRepository: a single comma separated entry
-        if (!Arrays.asList(tenants.getRegistrations().get(0).split(",")).contains(tenant)) {
+        // only realms in tenants.registrations are trusted, even if Keycloak hosts others;
+        // read per request so a config refresh takes effect
+        if (!tenants.trustedRealms().contains(tenant)) {
             return Mono.error(invalidToken(INVALID_TENANT));
         }
         // the realm's OpenID configuration could not be loaded; nothing is cached, so the next request retries

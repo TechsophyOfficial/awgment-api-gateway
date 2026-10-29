@@ -103,6 +103,32 @@ class TenantAuthenticationManagerResolverTest {
     }
 
     @Test
+    void authenticateUnlistedRealmTest()
+    {
+        // the realm exists on the configured Keycloak but is not in tenants.registrations
+        assertStatus(authenticate(sign(claims("techsophy-platform"))), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void authenticateRealmsFromYamlListTest()
+    {
+        TenantRegistration tenantRegistration = new TenantRegistration();
+        tenantRegistration.setRegistrations(List.of(TENANT, " KIMS "));
+        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"tenants",tenantRegistration);
+        StepVerifier.create(authenticate(sign(claims("KIMS"))))
+                .assertNext(authentication -> Assertions.assertTrue(authentication.isAuthenticated()))
+                .verifyComplete();
+        assertStatus(authenticate(sign(claims("techsophy-platform"))), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void resolveWithoutRegistrationsTest()
+    {
+        ReflectionTestUtils.setField(tenantAuthenticationManagerResolver,"tenants",new TenantRegistration());
+        assertStatus(tenantAuthenticationManagerResolver.resolve(exchange("Bearer " + sign(claims(TENANT)))), HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
     void authenticateInvalidSignatureTest()
     {
         String[] token = sign(claims(TENANT)).split("\\.");

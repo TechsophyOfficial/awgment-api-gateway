@@ -143,10 +143,21 @@ class TenantAuthenticationManagerResolverTest {
     }
 
     @Test
-    void authenticateUnlistedRealmTest()
+    void authenticateUnlistedRealmTest(CapturedOutput output)
     {
         // the realm exists on the configured Keycloak but is not in tenants.registrations
         assertStatus(authenticate(sign(claims("techsophy-platform"))), HttpStatus.UNAUTHORIZED);
+        Assertions.assertTrue(output.getOut().contains(
+                "Bearer token for realm 'techsophy-platform' on GET /api/core is not in tenants.registrations; rejected with 401"));
+    }
+
+    @Test
+    void pathPrefixTest()
+    {
+        Assertions.assertEquals("/api/d", TenantAuthenticationManagerResolver.pathPrefix(
+                MockServerWebExchange.from(MockServerHttpRequest.get("/api/d/secretcode"))));
+        Assertions.assertEquals("/api", TenantAuthenticationManagerResolver.pathPrefix(
+                MockServerWebExchange.from(MockServerHttpRequest.get("/api"))));
     }
 
     @Test

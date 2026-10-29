@@ -50,6 +50,10 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
         // only realms in tenants.registrations are trusted, even if Keycloak hosts others;
         // read per request so a config refresh takes effect
         if (!tenants.trustedRealms().contains(tenant)) {
+            // the route is not resolved yet at this point; only the path prefix is logged because deeper
+            // segments can carry link codes. The realm comes from a token whose signature is not checked yet
+            log.info("Bearer token for realm '{}' on {} {} is not in tenants.registrations; rejected with 401",
+                    tenant.isEmpty() ? "(none)" : truncate(tenant), request.getRequest().getMethodValue(), pathPrefix(request));
             return Mono.error(invalidToken(INVALID_TENANT));
         }
         // the realm's OpenID configuration could not be loaded; nothing is cached, so the next request retries
@@ -77,6 +81,17 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
         log.info("Public request on route {} ({}) has an Authorization header '{}' that is not a Bearer token; tenant not taken from it",
                 route == null ? "unknown" : route.getId(), request.getRequest().getMethodValue(), maskAuthorization(stoken));
         return null;
+    }
+
+    /** The first two path segments, e.g. "/api/ipd" for "/api/ipd/v1/x". */
+    static String pathPrefix(ServerWebExchange request) {
+        String[] segments = request.getRequest().getPath().pathWithinApplication().value().split("/", 4);
+        return segments.length > 2 ? "/" + segments[1] + "/" + segments[2] : request.getRequest().getPath().pathWithinApplication().value();
+    }
+
+    /** Client supplied values are capped so a long one cannot flood the log. */
+    public static String truncate(String value) {
+        return value.length() > 64 ? value.substring(0, 64) + "..." : value;
     }
 
     /** Keeps only the scheme, e.g. "Basic ****", so credentials never reach the log. */

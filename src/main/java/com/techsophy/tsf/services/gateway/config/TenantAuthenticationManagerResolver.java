@@ -95,7 +95,7 @@ public class TenantAuthenticationManagerResolver implements ReactiveAuthenticati
                 .onErrorMap(IllegalStateException.class, TenantAuthenticationManagerResolver::keycloakUnavailable);
     }
 
-    private static OAuth2AuthenticationException invalidToken(String description) {
+    static OAuth2AuthenticationException invalidToken(String description) {
         return new OAuth2AuthenticationException(new BearerTokenError(BearerTokenErrorCodes.INVALID_TOKEN, HttpStatus.UNAUTHORIZED, description, null));
     }
 

@@ -15,5 +15,6 @@ public class GatewayConstants
     public static final String REALMS="realms/";
     public static final String MALFORMED_TOKEN="Malformed token";
     public static final String INVALID_TENANT="Invalid tenant";
+    public static final String BEARER_SCHEME_MISSING="Bearer scheme missing";
     public static final String KEYCLOAK_UNAVAILABLE="Keycloak unavailable";
 }

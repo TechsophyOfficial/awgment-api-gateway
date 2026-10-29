@@ -64,7 +64,9 @@ public class SecurityConfig {
                 .pathMatchers(res).permitAll()
                 .anyExchange().authenticated())
                 .oauth2Login(oAuth2LoginSpec -> oAuth2LoginSpec.authorizationRequestResolver(authorizationRequestResolver(repository)));
-        http.oauth2ResourceServer(oauth2 -> oauth2.authenticationManagerResolver(authenticationManagerResolver));
+        http.oauth2ResourceServer(oauth2 -> oauth2
+                .bearerTokenConverter(new StrictBearerTokenConverter())
+                .authenticationManagerResolver(authenticationManagerResolver));
         return http.build();
     }
 }
